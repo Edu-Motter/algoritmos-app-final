@@ -1,21 +1,25 @@
 const Sequelize = require("sequelize");
 const dbconfig = require("./config/dbconfig");
 
-const Patient = require("../models/Patient");
-const Physician = require("../models/Physician");
-const Appointment = require("../models/Appointment");
+const Associate = require("../models/Associate");
+const Client = require("../models/Client");
+const Delivery = require("../models/Delivery");
+const DeliveryMan = require("../models/DeliveryMan");
+
 
 const connection = new Sequelize(dbconfig);
 
 //Inicianlizando os models:
-Patient.init(connection);
-Physician.init(connection);
-Appointment.init(connection);
+Associate.init(connection);
+Client.init(connection);
+Delivery.init(connection);
+DeliveryMan.init(connection);
 
 //Definindo os relacionamentos entre os models:
-Patient.associate(connection.models);
-Physician.associate(connection.models);
-Appointment.associate(connection.models);
+Associate.associate(connection.models);
+Client.associate(connection.models);
+Delivery.associate(connection.models);
+DeliveryMan.associate(connection.models);
 
 console.log("Models started!");
 

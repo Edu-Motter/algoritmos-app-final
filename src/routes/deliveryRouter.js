@@ -1,6 +1,6 @@
 const express = require("express");
 const appointmentRouter = express.Router();
-const appointmentController = require("../controllers/appointmentController");
+const appointmentController = require("../controllers/deliveryController");
 const auth = require("../middlewares/auth");
 
 appointmentRouter.post("/newAppointment", auth, appointmentController.newAppointment);

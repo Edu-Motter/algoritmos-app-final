@@ -10,7 +10,7 @@ function verifyJWT(req, res, next) {
             return res.status(401).json({msg: "Token expirou, usuário deve autenticar novamente"});
     
         //Adiciona informações na requisição para o endpoint:
-        req.physicianId = decoded.id;
+        req.entityId = decoded.id;
         next();    
     });
 }

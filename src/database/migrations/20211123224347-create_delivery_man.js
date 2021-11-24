@@ -2,26 +2,36 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("Patients", {
+    await queryInterface.createTable("DeliveryMan", {
       id: {
-         type: Sequelize.INTEGER,
-         primaryKey: true,
-         autoIncrement: true,
-         allowNull: false,
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
       },
-      name: {
-         type: Sequelize.STRING,
-         allowNull: false,
+      associateId:{
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: { model: "Associate", key: "id" },
+        onUpdate: "RESTRICT",
+        onDelete: "RESTRICT",
       },
-      email: {
+      name:{
         type: Sequelize.STRING,
         allowNull: false,
       },
+      cpf:{
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      password: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      }, 
       phone:{
         type: Sequelize.STRING,
         allowNull: false,
- 
-      },
+      },     
       createdAt:{
         type:Sequelize.DATE,
         allowNull:false,
@@ -38,7 +48,6 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("Patients");
-
+    await queryInterface.dropTable("DeliveryMan");
   }
 };

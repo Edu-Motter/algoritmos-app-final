@@ -1,6 +1,6 @@
 const express = require("express");
 const patientRouter = express.Router();
-const patientController = require("../controllers/patientController");
+const patientController = require("../controllers/deliveryManController");
 const auth = require("../middlewares/auth");
 
 patientRouter.get("/listAllPatients", patientController.listAllPatients);
