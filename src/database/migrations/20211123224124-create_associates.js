@@ -9,6 +9,10 @@ module.exports = {
          autoIncrement: true,
          allowNull: false,
       },
+      cnpj:{
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       companyName: {
          type: Sequelize.STRING,
          allowNull: false,

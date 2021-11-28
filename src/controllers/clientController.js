@@ -1,6 +1,8 @@
 const Client = require("../models/Client");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const Delivery = require("../models/Delivery");
+
 
 function passwordValidation(password) {
     if (password.length < 8) 
@@ -40,27 +42,44 @@ module.exports = {
         else 
             return res.status(404).json({msg: "Não foi possivel encontrar clientes."});
     },
-
-    async deletePhysician(req, res){
-        return res.status(400).json({msg: "Implementar essa rota"});
-        // const physicianId = req.query.id;
-        // const deletedPhysician = await Physician.destroy({
-        //     where: {id:physicianId},
-        // }).catch(async (error)=>{
-        //     const physicianHasRef = await Appointment.findOne({
-        //         where:{physicianId: physicianId},
-        //     }).catch((error)=>{
-        //         res.status(500).json({msg:"falha na conexao"});
-        //     });
-        //     if(physicianHasRef)
-        //     return res.status(403).json({msg:"medico possui consultas em seu nome"});
-        // });
-        // if(deletedPhysician !== 0)
-        //     res.status(200).json({msg:"medico excluido com sucesso"});
-        // else res.status(404).json({msg:"medico nao encontrado"});
+    async searchClientByCnpj(req, res){
+        const cnpj = req.query.cnpj;
+        if (!cnpj)
+            res.status(400).json({
+                msg:"parametro obrigatorio vazio",
+            });
+        const Op = Sequelize.Op;
+        const clients = await Client.findAll({
+            where: {cnpj: { [Op.like]: "%" + cnpj + "%" } },
+        });
+        
+        if (clients) {
+            console.log(clients);
+            if (clients == "")
+                res.status(404).json({msg:"Nao ha cliente com esse cnpj"});
+            else res.status(200).json({clients});
+        } else res.status(404).json({msg:"nao foi possivel encontrar o cliente"});
     },
 
-    async updatePhysician(req, res){
+    async deleteClient(req, res){
+        const clientId = req.query.id;
+        const deletedClient = await Client.destroy({
+            where: {id:clientId},
+        }).catch(async (error)=>{
+            const clientHasRef = await Delivery.findOne({
+                where:{clientId: clientId},
+            }).catch((error)=>{
+                res.status(500).json({msg:"falha na conexao"});
+            });
+            if(clientHasRef)
+            return res.status(403).json({msg:"cliente possui consultas em seu nome"});
+        });
+        if(deletedClient !== 0)
+            res.status(200).json({msg:"cliente excluido com sucesso"});
+        else res.status(404).json({msg:"cliente nao encontrado"});
+    },
+
+    async updateClient(req, res){
         return res.status(400).json({msg: "Implementar essa rota"});
         // const physicianId = req.body.id;
         // const physician = req.body;
@@ -81,45 +100,35 @@ module.exports = {
         //     }
     },
 
-    async newPhysician(req, res){
-        return res.status(400).json({msg: "Implementar essa rota"});
-        // const {name, email, password} = req.body;
-        // if(!name || !email || !password){
-        //     res
-        //     .status(400)
-        //     .json({
-        //         msg: "Dados obrigatorios nao foram preenchidos"
-        //     });
-        // }
+    async newClient(req, res){
+        const {companyName, cnpj, address} = req.body;
+        if(!companyName || !cnpj || !address){
+            res
+            .status(400)
+            .json({
+                msg: "Dados obrigatorios nao foram preenchidos"
+            });
+        }
 
-        // const passwordValid = passwordValidation(password);
-        // if(passwordValid !== "OK"){
-        //     return res.status(400).json({msg: passwordValid});
-        // }
+        const isClientNew = await Client.findOne({
+            where:{cnpj},
+        });
 
-        // const isPhysicianNew = await Physician.findOne({
-        //     where:{email},
-        // });       
-
-        // if (isPhysicianNew)
-        //     return res.status(403).json({msg:"Medico ja foi cadastrado"});
-        // else {
-
-        //     const salt = bcrypt.genSaltSync(12);
-        //     const hash = bcrypt.hashSync(password, salt);
-
-        //     const physician = await Physician.create({
-        //         name, 
-        //         email, 
-        //         password : hash,
-        //     }).catch((error)=>{
-        //         res.status(500).json({msg:"Nao foi possivel inserir os dados"});
-        //     });
-        //     if(physician)
-        //         res.status(201).json({msg:"Novo medico foi adicionado"});
-        //     else    
-        //         res.status(404).json({msg:"nao foi possivel cadastrar novo paciente"});
-        // }
+        if (isClientNew)
+            res.status(403).json({msg:"Cliente ja foi cadastrado"});
+        else {
+            const client = await Client.create({
+                companyName, 
+                cnpj, 
+                address,
+            }).catch((error)=>{
+                res.status(500).json({msg:"Nao foi possivel inserir os dados"});
+            });
+            if(physician)
+                res.status(201).json({msg:"Novo cliente foi adicionado"});
+            else    
+                res.status(404).json({msg:"nao foi possivel cadastrar novo cliente"});
+        }
     },
 
     async authentication(req, res){
