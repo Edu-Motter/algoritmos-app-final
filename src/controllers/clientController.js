@@ -27,18 +27,18 @@ function generateToken(id){
 }
 
 module.exports = {
-    async listAllPhysicians(req, res){
-        return res.status(400).json({msg: "Implementar essa rota"});
-        // const physicians = await Physician.findAll({
-        //     order: [["name", "ASC"]]
-        // }).catch((error) => {
-        //     res.status(500).json({msg: "Falha na conexão.", error: error});
-        // });
+    async listAllClients(req, res){
+        //return res.status(400).json({msg: "Implementar essa rota"});
+        const clients = await Client.findAll({
+            order: [["companyName", "ASC"]]
+        }).catch((error) => {
+            return res.status(500).json({msg: "Falha na conexão.", error: error});
+        });
 
-        // if (physicians) 
-        //     res.status(200).json({ physicians });
-        // else 
-        //     res.status(404).json({msg: "Não foi possivel encontrar medicos."});
+        if (clients) 
+            return res.status(200).json({ clients });
+        else 
+            return res.status(404).json({msg: "Não foi possivel encontrar clientes."});
     },
 
     async deletePhysician(req, res){

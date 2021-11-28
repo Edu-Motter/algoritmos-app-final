@@ -1,13 +1,13 @@
 const express = require("express");
-const physicianRouter = express.Router();
-const physicianController = require("../controllers/clientController");
+const clientRouter = express.Router();
+const clientController = require("../controllers/clientController");
 const auth = require("../middlewares/auth");
 
-physicianRouter.get("/listAllPhysicians", auth, physicianController.listAllPhysicians);
-physicianRouter.delete("/deletePhysician", auth, physicianController.deletePhysician);
-physicianRouter.put("/updatePhysician", auth, physicianController.updatePhysician);
+clientRouter.get("/listAllPhysicians", clientController.listAllClients);
+// clientRouter.delete("/deletePhysician", auth, clientController.deletePhysician);
+// clientRouter.put("/updatePhysician", auth, clientController.updatePhysician);
 
-physicianRouter.post("/newPhysician", physicianController.newPhysician);
-physicianRouter.post("/authentication", physicianController.authentication);
+// clientRouter.post("/newPhysician", clientController.newPhysician);
+// clientRouter.post("/authentication", clientController.authentication);
 
-module.exports = physicianRouter;
+module.exports = clientRouter;

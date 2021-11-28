@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
     res.send("It's working");
 });
 
-router.use("/delivery", deliveryRouter);
+router.use("/delivery", deliveryRouter);    
 router.use("/deliveryMan", deliveryManRouter);
 router.use("/client", clientRouter);
 
