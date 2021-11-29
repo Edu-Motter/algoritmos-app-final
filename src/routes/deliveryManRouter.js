@@ -1,13 +1,13 @@
 const express = require("express");
-const patientRouter = express.Router();
-const patientController = require("../controllers/deliveryManController");
+const deliveryManRouter = express.Router();
+const deliveryManController = require("../controllers/deliveryManController");
 const auth = require("../middlewares/auth");
 
-patientRouter.get("/listAllPatients", patientController.listAllPatients);
-patientRouter.post("/newPatient", patientController.newPatient);
-patientRouter.get("/searchPatientByName", patientController.searchPatientByName);
-patientRouter.get("/searchPatientByPhysician", patientController.searchPatientByPhysician);
-patientRouter.put("/updatePatient", patientController.updatePatient);
+deliveryManRouter.get("/listAllDeliveryMen", deliveryManController.listAllDeliveryMen);
+//deliveryManRouter.post("/newDeliveryMan", deliveryManController.newDeliveryMan);
+//deliveryManRouter.get("/searchDeliveryManByName", deliveryManController.searchDeliveryManByName);
+//deliveryManRouter.get("/searchDeliveryMenByAssociate", deliveryManController.searchDeliveryMenByAssociate);
+//deliveryManRouter.put("/updateDeliveryMan", deliveryManController.updateDeliveryMan);
 
 
-module.exports = patientRouter;
+module.exports = deliveryManRouter;

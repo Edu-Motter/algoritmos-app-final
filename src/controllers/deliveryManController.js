@@ -2,21 +2,20 @@ const DeliveryMan = require("../models/DeliveryMan");
 const Sequelize = require("sequelize");
 
 module.exports = {
-    async listAllPatients(req, res){
-        return res.status(400).json({msg: "Implementar essa rota"});
-        // const patients = await Patient.findAll({
-        //     order: [["name", "ASC"]]
-        // }).catch((error) => {
-        //     return res.status(500).json({msg: "Falha na conexão.", error: error});
-        // });
+    async listAllDeliveryMen(req, res){
+      const deliveryMen = await DeliveryMan.findAll({
+        order: [["name", "ASC"]]
+      }).catch((error) => {
+        return res.status(500).json({msg: "Falha na conex�o.", error: error});
+      });
 
-        // if (patients) 
-        //     return res.status(200).json({ patients });
-        // else 
-        //     return res.status(404).json({msg: "Não foi possivel encontrar pacientes."});
+      if (deliveryMen) 
+        return res.status(200).json({ deliveryMen });
+      else 
+        return res.status(404).json({msg: "N�o foi possivel encontrar clientes."});
     },
 
-    async newPatient(req, res){
+    async newDeliveryMan(req, res){
         return res.status(400).json({msg: "Implementar essa rota"});
         // const {name, email, phone} = req.body;
         // if (!name || !email || !phone){
@@ -44,7 +43,7 @@ module.exports = {
         //     return res.status(404).json({msg:"Nao foi possivel cadastrar novo paciente"});  
     },
 
-    async searchPatientByName(req, res){
+    async searchDeliveryManByName(req, res){
         return res.status(400).json({msg: "Implementar essa rota"});
         // const name = req.query.name;
         // if (!name)
@@ -63,7 +62,7 @@ module.exports = {
         // } else return res.status(404).json({msg:"nao foi possivel encontrar o paciente"});
     },
 
-    async searchPatientByPhysician (req, res){
+    async searchDeliveryMenByAssociate (req, res){
         return res.status(400).json({msg: "Implementar essa rota"});
         // const id = req.query.id;
         // if (!id)
@@ -87,7 +86,7 @@ module.exports = {
         //     return res.status(404).json({msg:"Esse médico ainda não possui pacientes"});  
     },
     
-    async updatePatient(req, res){
+    async updateDeliveryMan(req, res){
         return res.status(400).json({msg: "Implementar essa rota"});
         // const patientId = req.body.id;
         // const patient = req.body;

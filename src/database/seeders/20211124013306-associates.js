@@ -10,6 +10,12 @@ module.exports = {
           companyName: "Company Test",
           password: "teste@123",
           address: "Address Test, 234",
+        },
+        {
+          cnpj: "02.726.350/1111-28",
+          companyName: "Company Test 2",
+          password: "teste@123",
+          address: "Address Test, 567",
         }
       ]
     );
