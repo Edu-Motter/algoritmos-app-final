@@ -122,12 +122,12 @@ module.exports = {
                 cnpj, 
                 address,
             }).catch((error)=>{
-                res.status(500).json({msg:"Nao foi possivel inserir os dados"});
+                res.status(500).json({msg:"Não foi possivel inserir os dados"});
             });
-            if(physician)
+            if(client)
                 res.status(201).json({msg:"Novo cliente foi adicionado"});
             else    
-                res.status(404).json({msg:"nao foi possivel cadastrar novo cliente"});
+                res.status(404).json({msg:"Não foi possivel cadastrar novo cliente"});
         }
     },
 

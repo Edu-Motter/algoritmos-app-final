@@ -1,7 +1,17 @@
 const DeliveryMan = require("../models/DeliveryMan");
 const Sequelize = require("sequelize");
+const bcrypt = require("bcryptjs");
+
+function passwordValidation(password) {
+  if (password.length < 8 || !password.match(/[a-zA-Z]/g) || !password.match(/[0-9]+/)){
+    return false;
+  }else{
+    return true;
+  }
+}
 
 module.exports = {
+  
     async listAllDeliveryMen(req, res){
       const deliveryMen = await DeliveryMan.findAll({
         order: [["name", "ASC"]]
@@ -16,74 +26,110 @@ module.exports = {
     },
 
     async newDeliveryMan(req, res){
-        return res.status(400).json({msg: "Implementar essa rota"});
-        // const {name, email, phone} = req.body;
-        // if (!name || !email || !phone){
-        //     return res.status(400).json({
-        //         msg:"Dados obrigatorio nao foram preenchidos"
-        //     });
-        // }
+        const {associateId, name, cpf, password, phone} = req.body;
+         if (!name || !cpf || !password || !phone || !associateId){
+             res.status(400).json({
+                msg:"Dados obrigatórios não foram preenchidos"
+            });
+         }
+         if(cpf.length != 14){
+            res.status(400).json({
+              msg:"CPF inválido"
+          });
+         }
+         if(!passwordValidation(password)){
+            res.status(400).json({
+              msg:"Senha Inválida! A senha deve conter 8 caracteres, no mínimo 1 letra e 1 número!"
+            })
+         }
 
-        // const patientExists = await Patient.findOne({
-        //     where: {email},
-        // });
-        // if(patientExists)
-        //     return res.status(403).json({msg:"Paciente jÃ¡ cadastrado"});
-        
-        // const patient = await Patient.create({
-        //     name, 
-        //     email, 
-        //     phone,
-        // }).catch((error)=>{
-        //     return res.status(500).json({msg:"Nao foi possivel inserir dados"});
-        // });
-        // if (patient)
-        //     return res.status(201).json({msg:"Novo paciente adicionado com sucesso"});
-        // else 
-        //     return res.status(404).json({msg:"Nao foi possivel cadastrar novo paciente"});  
+         const deliverymanExists = await DeliveryMan.findOne({
+             where: {cpf},
+         });
+
+         if(deliverymanExists){
+            res.status(403).json({msg:"Deliveryman já cadastrado"});
+         }else{
+            const d = await DeliveryMan.create({
+              associateId,
+              name,
+              CPF:cpf,
+              password,
+              phone,
+
+            }).catch((error) => {
+               res.status(500).json({msg:"Erro interno no servidor",
+                erro: error,
+              });
+            });
+            
+            res.status(201).json({msg:"Novo entregador adicionado com sucesso"});
+            
+          }
+
     },
 
-    async searchDeliveryManByName(req, res){
-        return res.status(400).json({msg: "Implementar essa rota"});
-        // const name = req.query.name;
-        // if (!name)
-        //     return res.status(400).json({
-        //         msg:"parametro obrigatorio vazio",
-        //     });
-        // const Op = Sequelize.Op;
-        // const patients = await Patient.findAll({
-        //     where: {name: { [Op.like]: "%" + name + "%" } },
-        // });
-        
-        // if (patients) {
-        //     if (patients == "")
-        //         return res.status(404).json({msg:"Nao ha pacientes com esse nome"});
-        //     else return res.status(200).json({patients});
-        // } else return res.status(404).json({msg:"nao foi possivel encontrar o paciente"});
+    async searchDeliveryManByCpf(req, res){
+        const cpf = req.query.cpf;
+        if (!cpf)
+            return res.status(400).json({
+                msg:"CPF do entregador não informado"
+            });       
+
+        const deliverymen = await DeliveryMan.findAll({
+            where:[
+              {cpf: cpf},
+            ]
+        }).catch(async (error) => {
+            return res.status(500).json({msg:"Erro interno no servidor"});
+        });
+
+        if(deliverymen.length > 0) 
+            return res.status(200).json({deliverymen});            
+        else 
+            return res.status(404).json({msg:"Não foi possível encontrar nenhum entregador com esse cpf "}); 
     },
 
-    async searchDeliveryMenByAssociate (req, res){
-        return res.status(400).json({msg: "Implementar essa rota"});
-        // const id = req.query.id;
-        // if (!id)
-        //     return res.status(400).json({
-        //         msg:"Id do mÃ©dico nÃ£o foi informado"
-        //     });       
+    async searchDeliveryManById(req, res){
+      const id = req.query.id;
+      if (!id)
+          return res.status(400).json({
+              msg:"ID do entregador não informado"
+          });       
 
-        // const patients = await Patient.findAll({
-        //     include: {
-        //         model: Appointment,
-        //         where: { physicianId : id },
-        //         required: true,
-        //     }
-        // }).catch(async (error) => {
-        //     return res.status(500).json({msg:"Erro interno no servidor"});
-        // });
+      const deliverymen = await DeliveryMan.findAll({
+          where:[
+            {id: id},
+          ]
+      }).catch(async (error) => {
+          return res.status(500).json({msg:"Erro interno no servidor"});
+      });
 
-        // if(patients.length > 0) 
-        //     return res.status(200).json({patients});            
-        // else 
-        //     return res.status(404).json({msg:"Esse mÃ©dico ainda nÃ£o possui pacientes"});  
+      if(deliverymen.length > 0) 
+          return res.status(200).json({deliverymen});            
+      else 
+          return res.status(404).json({msg:"Não foi possível encontrar nenhum entregador com esse id "}); 
+  },
+
+    async searchDeliveryMenByAssociate(req, res){
+         const id = req.query.id;
+         if (!id)
+             return res.status(400).json({
+                 msg:"Id do associado não foi informado"
+             });       
+
+         const deliverymen = await DeliveryMan.findAll({
+             where:[
+               {associateId: id},
+             ]
+         }).catch(async (error) => {
+             return res.status(500).json({msg:"Erro interno no servidor"});
+         });
+
+         if(deliverymen.length > 0) 
+             return res.status(200).json({deliverymen});            
+         else 
+             return res.status(404).json({msg:"Não foi possível encontrar nenhum entregador para esse associado "});  
     },
     
     async updateDeliveryMan(req, res){
