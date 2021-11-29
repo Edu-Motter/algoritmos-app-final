@@ -28,42 +28,48 @@ module.exports = {
     async newDeliveryMan(req, res){
         const {associateId, name, cpf, password, phone} = req.body;
          if (!name || !cpf || !password || !phone || !associateId){
-             res.status(400).json({
+            return res.status(400).json({
                 msg:"Dados obrigatórios não foram preenchidos"
             });
          }
          if(cpf.length != 14){
-            res.status(400).json({
+            return res.status(400).json({
               msg:"CPF inválido"
           });
          }
          if(!passwordValidation(password)){
-            res.status(400).json({
+            return res.status(400).json({
               msg:"Senha Inválida! A senha deve conter 8 caracteres, no mínimo 1 letra e 1 número!"
             })
          }
 
          const deliverymanExists = await DeliveryMan.findOne({
              where: {cpf},
+         }).catch((error) => {
+          return res.status(500).json({
+            msg:"Erro interno no servidor",
+            erro: error,
          });
+        });
+      
 
          if(deliverymanExists){
-            res.status(403).json({msg:"Deliveryman já cadastrado"});
+          return res.status(403).json({msg:"Deliveryman já cadastrado"});
          }else{
             const d = await DeliveryMan.create({
               associateId,
               name,
-              CPF:cpf,
+              cpf,
               password,
               phone,
 
             }).catch((error) => {
-               res.status(500).json({msg:"Erro interno no servidor",
+              return  res.status(500).json({msg:"Erro interno no servidor",
                 erro: error,
               });
             });
             
-            res.status(201).json({msg:"Novo entregador adicionado com sucesso"});
+            return res.status(201).json({msg:"Novo entregador adicionado com sucesso"});
             
           }
 
@@ -132,24 +138,48 @@ module.exports = {
              return res.status(404).json({msg:"Não foi possível encontrar nenhum entregador para esse associado "});  
     },
     
-    async updateDeliveryMan(req, res){
-        return res.status(400).json({msg: "Implementar essa rota"});
-        // const patientId = req.body.id;
-        // const patient = req.body;
-        // if (!patientId) res.status(400).json({msg:"ID do paciente vazio"});
-        // else {
-        //     const patientExists = await Patient.findByPk(patientId);
-        //     if (!patientExists)
-        //         return res.status(404).json({msg:"paciente nao encontrado"});
-        //     else {
-        //         if (patient.name || patient.email){
-        //             await Patient.update(patient,{
-        //                 where : {id:patientId}
-        //             });
-        //             return res.status(200).json({msg:"paciente atualizdo com sucesso"});
-        //         } else return res.status(400).json({msg:"campos obrigatorios nao preenchidos"});
-        //     }
-        // }
-    }
-    
+  async updateDeliveryMan(req, res){
+        const deliverymanId = req.body.id;
+
+        const newData = req.body.data;
+
+        if(!deliverymanId){
+          return res.status(400).json({
+            msg:"ID do entregador não inserido"
+          });
+        }
+        if (!newData.name || !newData.cpf || !newData.password || !newData.phone || !newData.associateId){
+             return res.status(400).json({
+                msg:"Dados obrigatórios não foram preenchidos"
+            });
+        }
+        if(newData.cpf.length != 14){
+            return res.status(400).json({
+              msg:"CPF inválido"
+          });
+        }
+        if(!passwordValidation(newData.password)){
+           return res.status(400).json({
+             msg:"Senha Inválida! A senha deve conter 8 caracteres, no mínimo 1 letra e 1 número!"
+           })
+        }
+
+         const deliverymanExists = await DeliveryMan.findOne({
+            where:{id: deliverymanId}
+         });
+
+         if(deliverymanExists){
+          await DeliveryMan.update(newData,{
+            where:{id:deliverymanId}
+          }).catch((error) => { 
+            return res.status(500).json({
+              msg:"Erro interno no servidor",
+              erro: error,
+            });
+          });
+          return res.status(200).json({msg:"Entregador alterado com sucesso."});
+        }else{
+          return res.status(500).json({msg:"Não foi possível encontrar o entregador."})
+        }
+  },    
 }

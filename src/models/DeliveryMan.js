@@ -5,7 +5,7 @@ class DeliveryMan extends Sequelize.Model {
         super.init(
             {
                 name: Sequelize.STRING,
-                CPF: {
+                cpf: {
                     type: Sequelize.STRING,
                     allowNull: false,
                     unique: true
