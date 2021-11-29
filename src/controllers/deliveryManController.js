@@ -32,7 +32,7 @@ module.exports = {
                 msg:"Dados obrigatórios não foram preenchidos"
             });
          }
-         if(cpf.length != 14){
+         if(cpf.length != 11){
             return res.status(400).json({
               msg:"CPF inválido"
           });
@@ -153,7 +153,7 @@ module.exports = {
                 msg:"Dados obrigatórios não foram preenchidos"
             });
         }
-        if(newData.cpf.length != 14){
+        if(newData.cpf.length != 11){
             return res.status(400).json({
               msg:"CPF inválido"
           });

@@ -6,13 +6,13 @@ module.exports = {
       "Associates",
       [
         {
-          cnpj: "02.726.350/0001-28",
+          cnpj: "02726350000128",
           companyName: "Company Test",
           password: "teste@123",
           address: "Address Test, 234",
         },
         {
-          cnpj: "02.726.350/1111-28",
+          cnpj: "02726350111128",
           companyName: "Company Test 2",
           password: "teste@123",
           address: "Address Test, 567",

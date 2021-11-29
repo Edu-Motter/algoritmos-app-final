@@ -8,7 +8,7 @@ module.exports = {
         {
           associateId: 1,
           companyName: "Client Test",
-          cnpj: "03.726.350/0001-28",
+          cnpj: "03726350000128",
           address: "Address Test, 234",
         }
       ]
