@@ -9,6 +9,6 @@ deliveryManRouter.get("/searchDeliveryManById", deliveryManController.searchDeli
 deliveryManRouter.get("/searchDeliveryManByCpf", deliveryManController.searchDeliveryManByCpf);
 deliveryManRouter.get("/searchDeliveryMenByAssociate", deliveryManController.searchDeliveryMenByAssociate);
 deliveryManRouter.put("/updateDeliveryMan", deliveryManController.updateDeliveryMan);
-
+deliveryManRouter.delete("/deleteDeliveryman", deliveryManController.deleteDeliveryman);
 
 module.exports = deliveryManRouter;

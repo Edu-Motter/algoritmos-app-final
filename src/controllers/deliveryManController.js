@@ -182,4 +182,21 @@ module.exports = {
           return res.status(500).json({msg:"Não foi possível encontrar o entregador."})
         }
   },    
+
+  async deleteDeliveryman(req,res){
+    const deliverymanId = req.query.id;
+
+    
+    const deletedDeliveryman = await DeliveryMan.destroy({
+        where: {id : deliverymanId},
+    }).catch(async (error)=>{
+        return res.status(500).json({msg:"Erro interno ao excluir o entregador"});
+    });
+
+    if(deletedDeliveryman){
+        res.status(200).json({msg:"Entregador excluído com sucesso!"});
+    }else{
+        res.status(404).json({msg:"Entregador não encontrado"});
+    }
+  }
 }

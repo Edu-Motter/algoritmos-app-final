@@ -4,17 +4,6 @@ const jwt = require("jsonwebtoken");
 const Delivery = require("../models/Delivery");
 
 
-function passwordValidation(password) {
-    if (password.length < 8) 
-        return "Senha deve ter no mÃ­nimo 8 caracteres";
-    else if (!password.match(/[a-zA-Z]/g))
-        return "Senha deve ter no mÃ­nimo uma letra";
-    else if (!password.match(/[0-9]+/))
-        return "Senha deve ter no mÃ­nimo um nÃºmero";
-    else 
-        return "OK";
-}
-
 function generateToken(id){
     console.log(process.env.JWT_SECRET);
     process.env.JWT_SECRET = Math.random().toString(36).slice(-20);
@@ -30,83 +19,118 @@ function generateToken(id){
 
 module.exports = {
     async listAllClients(req, res){
-        //return res.status(400).json({msg: "Implementar essa rota"});
         const clients = await Client.findAll({
             order: [["companyName", "ASC"]]
         }).catch((error) => {
-            return res.status(500).json({msg: "Falha na conexÃ£o.", error: error});
+            return res.status(500).json({msg: "Falha na conexão.", error: error});
         });
 
         if (clients) 
             return res.status(200).json({ clients });
         else 
-            return res.status(404).json({msg: "NÃ£o foi possivel encontrar clientes."});
+            return res.status(404).json({msg: "Não foi possivel encontrar clientes."});
     },
+
     async searchClientByCnpj(req, res){
         const cnpj = req.query.cnpj;
         if (!cnpj)
-            res.status(400).json({
-                msg:"parametro obrigatorio vazio",
+            return res.status(400).json({
+                msg:"Parâmetro obrigatório vazio",
             });
-        const Op = Sequelize.Op;
-        const clients = await Client.findAll({
-            where: {cnpj: { [Op.like]: "%" + cnpj + "%" } },
+
+        const clients = await Client.findOne({
+            where: {cnpj: cnpj},
         });
         
         if (clients) {
-            console.log(clients);
-            if (clients == "")
-                res.status(404).json({msg:"Nao ha cliente com esse cnpj"});
-            else res.status(200).json({clients});
-        } else res.status(404).json({msg:"nao foi possivel encontrar o cliente"});
+            return res.status(200).json({clients});
+        }else{ 
+            return res.status(404).json({msg:"Não há cliente com esse cnpj"});
+        }
     },
 
+    async searchClientById(req, res){
+      const id = req.query.id;
+       
+      if (!id){
+          return res.status(400).json({
+              msg:"Parâmetro obrigatório vazio",
+          });
+      }
+      const clients = await Client.findOne({
+          where: {id: id},
+      });
+      
+      if (clients) {
+          return res.status(200).json({clients});
+      }else{ 
+          return res.status(404).json({msg:"Não há cliente com esse cnpj"});
+      }
+  },
+
     async deleteClient(req, res){
+
         const clientId = req.query.id;
+
         const deletedClient = await Client.destroy({
             where: {id:clientId},
         }).catch(async (error)=>{
-            const clientHasRef = await Delivery.findOne({
-                where:{clientId: clientId},
-            }).catch((error)=>{
-                res.status(500).json({msg:"falha na conexao"});
-            });
-            if(clientHasRef)
-            return res.status(403).json({msg:"cliente possui consultas em seu nome"});
+          return res.status(500).json({msg:"Erro interno ao excluir o cliente"});
         });
-        if(deletedClient !== 0)
-            res.status(200).json({msg:"cliente excluido com sucesso"});
-        else res.status(404).json({msg:"cliente nao encontrado"});
+
+        if(deletedClient){
+          return res.status(200).json({msg:"Cliente excluído com sucesso"});
+        }
+        else{ 
+          return res.status(404).json({msg:"Cliente não encontrado"});
+        }
     },
 
     async updateClient(req, res){
-        return res.status(400).json({msg: "Implementar essa rota"});
-        // const physicianId = req.body.id;
-        // const physician = req.body;
-        // if (!physicianId) res.status(400).json({msg:"ID do medico vazio"});
-        // else {
-        //     const physicianExists = await Physician.findByPk(physicianId);
-        //     if(!physicianExists)
-        //         res.status(404).json({msg:"Medico nao encontrado"});
-        //     else {
-        //         if (physician.name || physician.email){
-        //             await Physician.update(physician,{
-        //                 where:{id:physicianId},
-        //             });
-        //             return res.status(200).json({msg:"Medico atualizado com sucesso"});
-        //         } else
-        //           return res.status.json({msg:"Campos obrigatorios nao preenchidos"});
-        //         }
-        //     }
+      const clientId = req.body.id;
+
+      const newData = req.body.data;
+
+      if(!clientId){
+        return res.status(400).json({
+          msg:"ID do entregador não inserido"
+        });
+      }
+      if (!newData.companyName || !newData.cnpj || !newData.address || !newData.associateId){
+           return res.status(400).json({
+              msg:"Dados obrigatórios não foram preenchidos"
+          });
+      }
+    
+
+       const clientExists = await Client.findOne({
+          where:{id: clientId}
+       });
+
+       if(clientExists){
+
+        await Client.update(newData,{
+          where:{id:clientId} 
+        }).catch((error) => { 
+          return res.status(500).json({
+            msg:"Erro interno no servidor",
+            erro: error,
+          });
+        });
+
+        return res.status(200).json({msg:"Cliente alterado com sucesso."});
+
+      }else{
+        return res.status(500).json({msg:"Não foi possível encontrar o cliente."})
+      }
     },
 
     async newClient(req, res){
-        const {companyName, cnpj, address} = req.body;
-        if(!companyName || !cnpj || !address){
-            res
-            .status(400)
-            .json({
-                msg: "Dados obrigatorios nao foram preenchidos"
+
+        const {companyName, cnpj, address, associateId} = req.body;
+        if(!companyName || !cnpj || !address || !associateId){
+            return res.status(400).json({
+                msg: "Dados obrigatórios não foram preenchidos"
             });
         }
 
@@ -114,20 +138,27 @@ module.exports = {
             where:{cnpj},
         });
 
-        if (isClientNew)
-            res.status(403).json({msg:"Cliente ja foi cadastrado"});
-        else {
+        if (isClientNew){
+            return res.status(403).json({
+              msg:"Cliente ja foi cadastrado"
+            });
+        }else {
             const client = await Client.create({
+                cnpj,  
+                associateId,
                 companyName, 
-                cnpj, 
                 address,
             }).catch((error)=>{
-                res.status(500).json({msg:"Não foi possivel inserir os dados"});
+              return res.status(500).json({
+                msg:"Não foi possível inserir os dados",
+                error:error,
+              });
             });
-            if(client)
-                res.status(201).json({msg:"Novo cliente foi adicionado"});
-            else    
-                res.status(404).json({msg:"Não foi possivel cadastrar novo cliente"});
+            if(client){
+              return res.status(201).json({msg:"Novo cliente foi adicionado"});
+            }else{ 
+              return res.status(404).json({msg:"Não foi possivel cadastrar novo cliente"});
+            }
         }
     },
 
