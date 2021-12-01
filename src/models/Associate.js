@@ -5,7 +5,7 @@ class Associate extends Sequelize.Model {
         super.init(
             {
                 companyName: Sequelize.STRING,
-                CNPJ: {
+                cnpj: {
                     type: Sequelize.STRING,
                     allowNull: false,
                     unique: true

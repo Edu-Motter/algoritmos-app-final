@@ -9,3 +9,5 @@ Antes de iniciar o projeto:
 Para rodar o projeto:
 - npm run dev
 
+Para resetar o banco: 
+- npx sequelize db:migrate:undo:all
