@@ -8,8 +8,9 @@ function verifyJWT(req, res, next) {
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (err)
             return res.status(401).json({msg: "Token expirou, usuário deve autenticar novamente"});
-    
-        //Adiciona informações na requisição para o endpoint:
+        
+        //Colocar isso para diferenciar os users
+        //req.entituType = decoded.type;
         req.entityId = decoded.id;
         next();    
     });
