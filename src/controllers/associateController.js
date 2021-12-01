@@ -61,7 +61,7 @@ module.exports = {
             res.status(400).json({
                 msg:"parametro obrigatorio vazio",
             });
-        const Op = Sequelize.Op;
+
         const associate = await Associate.findOne({
             where: {cnpj: cnpj },
         });
@@ -92,10 +92,15 @@ module.exports = {
                 if (associate.cnpj || associate.companyName ){
                     await Associate.update(associate,{
                         where:{id:associateId},
-                    });
+                    }).catch((error) => {
+                      return res.status(500).json({
+                        msg:"Erro interno no servidor",
+                        error:error,
+                      });
+                    })
                     return res.status(200).json({msg:"Associado atualizado com sucesso"});
                 } else
-                  return res.status.json({msg:"Campos obrigatorios nao preenchidos"});
+                    return res.status(400).json({msg:"Campos obrigatorios nao preenchidos"});
                 }
             }
     },
