@@ -75,7 +75,10 @@ module.exports = {
         const deletedClient = await Client.destroy({
             where: {id:clientId},
         }).catch(async (error)=>{
-          return res.status(500).json({msg:"Erro interno ao excluir o cliente"});
+          return res.status(500).json({
+            msg:"Erro interno ao excluir o cliente",
+            error:error,
+          });
         });
 
         if(deletedClient){

@@ -23,9 +23,9 @@ class Associate extends Sequelize.Model {
     }
 
     static associate(models){
-        this.hasMany(models.Delivery, { foreignKey: "associateId"})
-        this.hasMany(models.Client, { foreignKey: "associateId"})
-        this.hasMany(models.DeliveryMan, { foreignKey: "associateId"})
+        this.hasMany(models.Delivery, { foreignKey: "associateId"}, {onDelete: 'cascade'});
+        this.hasMany(models.Client, { foreignKey: "associateId"}, {onDelete: 'cascade'});
+        this.hasMany(models.DeliveryMan, { foreignKey: "associateId"}, {onDelete: 'cascade'});
     }
 }
 

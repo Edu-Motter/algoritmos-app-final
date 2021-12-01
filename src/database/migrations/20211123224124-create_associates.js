@@ -12,6 +12,7 @@ module.exports = {
       cnpj:{
         type: Sequelize.STRING,
         allowNull: false,
+        unique: true,
       },
       companyName: {
          type: Sequelize.STRING,

@@ -4,12 +4,12 @@ const associateController = require("../controllers/associateController");
 const auth = require("../middlewares/auth");
 const validation = require("../middlewares/validators/associateValidator");
 
-associateRouter.get("/listAllAssociates", validation, associateController.listAllAssociates);
-associateRouter.post("/newAssociate", validation, associateController.newAssociate);
-associateRouter.post("/authentication", validation, associateController.authentication);
-
-associateRouter.delete("/deleteAssociate", auth, validation, associateController.deleteAssociate);
-associateRouter.put("/updateAssociate", auth, validation, associateController.updateAssociate);
+associateRouter.get("/listAllAssociates", associateController.listAllAssociates);
+associateRouter.post("/newAssociate", associateController.newAssociate);
+associateRouter.post("/authentication", associateController.authentication);
+associateRouter.get("/listAssociateByCnpj", associateController.searchAssociateByCnpj);
+associateRouter.delete("/deleteAssociate", associateController.deleteAssociate);
+associateRouter.put("/updateAssociate", associateController.updateAssociate);
 
 
 module.exports = associateRouter;

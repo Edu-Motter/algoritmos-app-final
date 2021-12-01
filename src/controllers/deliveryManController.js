@@ -27,7 +27,26 @@ module.exports = {
 
     async newDeliveryMan(req, res){
         const {associateId, name, cpf, password, phone} = req.body;
-        const deliverymanExists = await DeliveryMan.findOne({
+         if (!name || !cpf || !password || !phone || !associateId){
+            return res.status(400).json({
+                msg:"Dados obrigatórios não foram preenchidos"
+            });
+         }
+         if(cpf.length != 11){
+            return res.status(400).json({
+              msg:"CPF inválido"
+          });
+         }
+         if(!passwordValidation(password)){
+            return res.status(400).json({
+              msg:"Senha Inválida! A senha deve conter 8 caracteres, no mínimo 1 letra e 1 número!"
+            })
+         }
+
+        const salt = bcrypt.genSaltSync(12);
+        const hash = bcrypt.hashSync(password, salt);
+
+         const deliverymanExists = await DeliveryMan.findOne({
              where: {cpf},
         }).catch((error) => {
           return res.status(500).json({
@@ -36,20 +55,22 @@ module.exports = {
          });
         });
       
-        if (deliverymanExists) {
-          return res.status(403).json({msg:"Deliveryman jï¿½ cadastrado"});
-        } else {
-          const d = await DeliveryMan.create({
-            associateId,
-            name,
-            cpf,
-            password,
-            phone,
-          }).catch((error) => {
-            return  res.status(500).json({msg:"Erro interno no servidor",
-              erro: error,
-          });
-        });
+
+         if(deliverymanExists){
+          return res.status(403).json({msg:"Deliveryman já cadastrado"});
+         }else{
+            const d = await DeliveryMan.create({
+              associateId,
+              name,
+              cpf,
+              password: hash,
+              phone,
+
+            }).catch((error) => {
+              return  res.status(500).json({msg:"Erro interno no servidor",
+                erro: error,
+              });
+            });
             
         return res.status(201).json({msg:"Novo entregador adicionado com sucesso"});
             
@@ -171,7 +192,10 @@ module.exports = {
     const deletedDeliveryman = await DeliveryMan.destroy({
         where: {id : deliverymanId},
     }).catch(async (error)=>{
-        return res.status(500).json({msg:"Erro interno ao excluir o entregador"});
+        return res.status(500).json({
+          msg:"Erro interno ao excluir o entregador",
+          error:error,
+        });
     });
 
     if(deletedDeliveryman){

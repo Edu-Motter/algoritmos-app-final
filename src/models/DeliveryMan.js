@@ -20,8 +20,8 @@ class DeliveryMan extends Sequelize.Model {
     }
 
     static associate(models){
-        this.hasMany(models.Delivery, { foreignKey: "deliveryManId" })
-        this.belongsTo(models.Associate, { foreignKey: "associateId" })
+        this.hasMany(models.Delivery, { foreignKey: "deliveryManId" }, {onDelete: 'cascade'});
+        this.belongsTo(models.Associate, { foreignKey: "associateId" });
     }
 }
 

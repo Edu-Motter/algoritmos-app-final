@@ -14,7 +14,7 @@ module.exports = {
         allowNull: false,
         references: { model: "Associates", key: "id" },
         onUpdate: "RESTRICT",
-        onDelete: "RESTRICT",
+        onDelete: "CASCADE",
       },
       cnpj:{
         type: Sequelize.STRING,

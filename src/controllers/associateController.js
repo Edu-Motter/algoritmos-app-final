@@ -5,14 +5,11 @@ const jwt = require("jsonwebtoken");
 const Delivery = require("../models/Delivery");
 
 function passwordValidation(password) {
-    if (password.length < 8) 
-        return "Senha deve ter no mÃ­nimo 8 caracteres";
-    else if (!password.match(/[a-zA-Z]/g))
-        return "Senha deve ter no mÃ­nimo uma letra";
-    else if (!password.match(/[0-9]+/))
-        return "Senha deve ter no mÃ­nimo um nÃºmero";
-    else 
-        return "OK";
+  if (password.length < 8 || !password.match(/[a-zA-Z]/g) || !password.match(/[0-9]+/)){
+    return false;
+  }else{
+    return true;
+  }
 }
 
 function generateToken(id){
@@ -36,28 +33,26 @@ module.exports = {
             return res.status(500).json({msg: "Falha na conexÃ£o.", error: error});
         });
 
-        if (associates) 
+        if (associates){
             return res.status(200).json({ associates });
-        else 
-            return res.status(404).json({msg: "NÃ£o foi possivel encontrar clientes."});
+        }else{
+            return res.status(404).json({msg: "Não foi possivel encontrar clientes."});
+        }
     },
 
     async deleteAssociate(req, res){
         const associateId = req.query.id;
+
         const deletedAssociate = await Associate.destroy({
             where: {id:associateId},
-        }).catch(async (error)=>{
-            const associateHasRef = await Delivery.findOne({
-                where:{associateId: associateId},
-            }).catch((error)=>{
-                res.status(500).json({msg:"falha na conexao"});
-            });
-            if(associateHasRef)
-            return res.status(403).json({msg:"associado possui entregas em seu nome"});
         });
-        if(deletedAssociate !== 0)
-            res.status(200).json({msg:"associado excluido com sucesso"});
-        else res.status(404).json({msg:"associado nao encontrado"});
+     
+        if(deletedAssociate){
+          return res.status(200).json({msg:"Associado excluido com sucesso"});
+        }else{
+          return res.status(404).json({msg:"Associado nao encontrado"});
+        } 
+          
     },
 
     async searchAssociateByCnpj(req, res){
@@ -67,29 +62,34 @@ module.exports = {
                 msg:"parametro obrigatorio vazio",
             });
         const Op = Sequelize.Op;
-        const associates = await Associate.findAll({
-            where: {cnpj: { [Op.like]: "%" + cnpj + "%" } },
+        const associate = await Associate.findOne({
+            where: {cnpj: cnpj },
         });
         
-        if (associates) {
-            console.log(associates);
-            if (associates == "")
-                res.status(404).json({msg:"Nao ha associados com esse nome"});
-            else res.status(200).json({associates});
-        } else res.status(404).json({msg:"nao foi possivel encontrar o associado"});
+        if (associate) {
+          if (associate){
+            return res.status(200).json({associate});
+          }else{
+            return res.status(404).json({msg:"Não há associados com esse cnpj"});
+          } 
+        } else res.status(404).json({msg:"Não foi possível encontrar o associado"});
     }
     ,
 
     async updateAssociate(req, res){
         const associateId = req.body.id;
-        const associate = req.body;
-        if (!associateId) res.status(400).json({msg:"ID do associado vazio"});
+        const associate = req.body.data;
+       
+        if (!associateId){
+          return res.status(400).json({msg:"ID do associado vazio"});
+        }
         else {
             const associateExists = await Associate.findByPk(associateId);
-            if(!associateExists)
-                res.status(404).json({msg:"Associado nao encontrado"});
+            if(!associateExists){  
+              return res.status(404).json({msg:"Associado nao encontrado"});
+            }
             else {
-                if (associate.cnpj || associate.companyName){
+                if (associate.cnpj || associate.companyName ){
                     await Associate.update(associate,{
                         where:{id:associateId},
                     });
@@ -101,18 +101,18 @@ module.exports = {
     },
 
     async newAssociate(req, res){
-        const {cnpj, companyName, password} = req.body;
-        if(!cnpj || !companyName || !password){
-            res
-            .status(400)
-            .json({
+
+        const {cnpj, companyName, password, address} = req.body;
+        if(!cnpj || !companyName || !password || !address){
+            return res.status(400).json({
                 msg: "Dados obrigatorios nao foram preenchidos"
             });
         }
 
         const passwordValid = passwordValidation(password);
-        if(passwordValid !== "OK"){
-            return res.status(400).json({msg: passwordValid});
+       
+        if(!passwordValid){
+            return res.status(400).json({msg: "Senha Inválida! A senha deve conter 8 caracteres, no mínimo 1 letra e 1 número!"});
         }
 
         const isAssociateNew = await Associate.findOne({
@@ -129,14 +129,19 @@ module.exports = {
             const associate = await Associate.create({
                 cnpj, 
                 companyName, 
-                password : hash,
+                password: hash,
+                address,
             }).catch((error)=>{
-                return res.status(500).json({msg:"Nao foi possivel inserir os dados"});
+                return res.status(500).json({
+                  msg:"Nao foi possivel inserir os dados",
+                  error:error,
+                });
             });
-            if(associate)
+            if(associate){
                 res.status(201).json({msg:"Novo associado foi adicionado"});
-            else    
+            }else{    
                 res.status(404).json({msg:"nao foi possivel cadastrar novo associado"});
+            }
         }
     },
 
