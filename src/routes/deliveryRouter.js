@@ -1,12 +1,12 @@
 const express = require("express");
-const appointmentRouter = express.Router();
-const appointmentController = require("../controllers/deliveryController");
+const deliveryRouter = express.Router();
+const deliveryController = require("../controllers/deliveryController");
 const auth = require("../middlewares/auth");
 
-appointmentRouter.post("/newAppointment", auth, appointmentController.newAppointment);
-appointmentRouter.delete("/deleteAppointment", auth, appointmentController.deleteAppointment);
-appointmentRouter.get("/listAllAppointments", auth, appointmentController.listAllAppointments);
-appointmentRouter.get("/searchAppointmentByPatientId", auth, appointmentController.findAppointmentByPatientId);
-appointmentRouter.get("/searchAppointmentByPhysicianId", auth, appointmentController.findAppointmentByPhysicianId);
+deliveryRouter.post("/newDelivery", deliveryController.newDelivery);
+//deliveryRouter.delete("/deleteAppointment", auth, deliveryController.deleteAppointment);
+deliveryRouter.get("/listAllDeliveries",  deliveryController.listAllDeliveries);
+//deliveryRouter.get("/searchAppointmentByPatientId", auth, deliveryController.findAppointmentByPatientId);
+//deliveryRouter.get("/searchAppointmentByPhysicianId", auth, deliveryController.findAppointmentByPhysicianId);
 
-module.exports = appointmentRouter;
+module.exports = deliveryRouter;

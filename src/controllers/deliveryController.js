@@ -1,60 +1,52 @@
 const Delivery = require("../models/Delivery");
-// const Patient = require("../models/Patient");
-// const Physician = require("../models/Physician");
+const Client = require("../models/Client");
+
 
 module.exports = {
-    async newAppointment(req, res){
-        return res.status(400).json({msg: "Implementar essa rota"});
-        // const {description, appointmentDate, patientId, physicianId} = req.body;
-        // if (!description || !appointmentDate || !patientId || !physicianId){
-        //     return res.status(403).json({
-        //         error : "Dados obrigatórios não foram preenchidos"
-        //     });   
-        // }
-        // //Validar se existe o paciente:
-        // const patientExists = await Patient.findOne({
-        //     where: [
-        //         {id : patientId},
-        //     ]
-        // });
-        // if (!patientExists){
-        //     return res.status(403).json({msg:"Paciente não encontrado, consulta não pode ser criada"});
-        // } 
-        // //Valida se existe o medico:
-        // const physicianExists = await Physician.findOne({
-        //     where: [
-        //         {id : physicianId},
-        //     ]
-        // });
-        // if (!physicianExists){
-        //     return res.status(403).json({msg:"Médico não encontrado, consulta não pode ser criada"});
-        // }
-
-        // //Valida se a consulta ja existe:
-        // const appointmentExists = await Appointment.findOne({
-        //     where: [
-        //         {"patientId": patientId},
-        //         {"physicianId": physicianId},
-        //         {"appointmentDate": appointmentDate}
-        //     ]
-        // });
-        // if(appointmentExists)
-        //     return res.status(403).json({msg:"Consulta já existente para nessa data com esse paciente e médico"});
+    async newDelivery(req, res){
         
-        // //Se os dois existirem, inserir:
-        // const appointment = await Appointment.create({
-        //     description, 
-        //     appointmentDate,
-        //     patientId,
-        //     physicianId
-        // }).catch((error)=>{
-        //     return res.status(500).json({msg:"Erro interno no servidor"});
-        // });
+      const {description, clientId, deliveryManId} = req.body;
+        
+        if (!description || !clientId || !deliveryManId ){
+             return res.status(403).json({
+                 error : "Dados obrigat�rios n�o foram preenchidos"
+             });   
+         }
 
-        // if (appointment)
-        //     return res.status(201).json({msg:"Consulta criada com sucesso"});
-        // else 
-        //     return res.status(404).json({msg:"Erro ao criar nova consulta"});
+      const client = await Client.findOne({
+        where:{id: clientId}
+      }).catch((error) => {
+        return res.status(404).json({
+          msg:"Cliente n�o encontrado!",
+          error:error,
+        });
+      });
+
+      if(client){
+        const delivery = await Delivery.create({
+          description,
+          clientId,
+          deliveryManId,
+          associateId: client.associateId,
+          delivered: false,
+          value: 0.0,
+        }).catch((error) => {
+          return res.status(500).json({
+            msg:"Erro interno no servidor",
+            error:error,
+          });
+        })
+        
+        if(delivery){
+          return res.status(200).json({
+            msg:"Nova entrega cadastrada com sucesso!"
+          });
+        }else{
+          return res.status(500).json({
+            msg:"Erro ao cadastrar nova entrega"
+          });
+        }
+      }
     },
 
     async deleteAppointment(req, res){
@@ -73,18 +65,22 @@ module.exports = {
         //     res.status(404).json({msg:"Consulta não foi encontrada"});
     },
 
-    async listAllAppointments(req, res){
-        return res.status(400).json({msg: "Implementar essa rota"});
-        // const appointments = await Appointment.findAll({
-        //     order: [["description", "ASC"]]
-        // }).catch((error) => {
-        //     res.status(500).json({msg: "Erro interno no servidor", error: error});
-        // });
+    async listAllDeliveries(req, res){
+         
+      const deliveries = await Delivery.findAll({
+             order: [["description", "ASC"]]
+         }).catch((error) => {
+             res.status(500).json({
+               msg: "Erro interno no servidor", 
+               error: error
+              });
+         });
 
-        // if (appointments) 
-        //     res.status(200).json({ appointments });
-        // else 
-        //     res.status(404).json({msg: "Não foi possivel encontrar consultas."});
+        if (deliveries){
+             res.status(200).json({ deliveries });
+        }else{
+            res.status(404).json({msg: "N�o foi poss�vel encontrar entregas."}); 
+        }    
     },
 
     async findAppointmentByPatientId(req, res){

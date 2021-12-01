@@ -4,7 +4,7 @@ class Delivery extends Sequelize.Model {
     static init(sequelize) {
         super.init(
             {
-                date: Sequelize.DATE,
+                deliveredAt: Sequelize.DATE,
                 value: Sequelize.FLOAT,
                 description: Sequelize.STRING,
                 delivered: Sequelize.BOOLEAN
