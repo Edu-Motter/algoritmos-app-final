@@ -4,7 +4,21 @@ const {
     searchByIdValidation,
     searchByCpfValidation,
     searchByAssociateValidation } = require("../../schemas/deliveryManSchema");
- 
+
+function generateToken(id){
+    console.log(process.env.JWT_SECRET);
+    process.env.JWT_SECRET = Math.random().toString(36).slice(-20);
+    console.log(process.env.JWT_SECRET);
+
+    const token = jwt.sign({ id }, process.env.JWT_SECRET, 
+        {expiresIn : 86400} //24hrs
+    );
+    
+    console.log(token);
+    return token;
+}
+
+    
 function validade(req, res, next) {
     
     switch (req.route.path){
@@ -27,6 +41,14 @@ function validade(req, res, next) {
             } else if (updateBody.value) {
                 return next();
             }
+
+        case '/deleteDeliveryman':
+            //const updateBody = updateValidation.validate(req.body);
+            //if (updateBody.error){
+            //    return res.status(422).json(updateBody.error.details);
+            //} else if (updateBody.value) {
+                return next();
+            //}
 
         case '/searchDeliveryManById':
             const searchById = searchByIdValidation.validate(req.query);

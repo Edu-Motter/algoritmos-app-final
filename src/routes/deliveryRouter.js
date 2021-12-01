@@ -9,5 +9,4 @@ appointmentRouter.get("/listAllAppointments", auth, appointmentController.listAl
 appointmentRouter.get("/searchAppointmentByPatientId", auth, appointmentController.findAppointmentByPatientId);
 appointmentRouter.get("/searchAppointmentByPhysicianId", auth, appointmentController.findAppointmentByPhysicianId);
 
-
 module.exports = appointmentRouter;

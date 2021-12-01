@@ -1,21 +1,24 @@
-//const schema = requier();
+const schema = require("../../schemas/associateSchema");
 
 function validade(req, res, next) {
 
     switch (req.route.path){
-        case '/listAllClients':
+        case '/listAllAssociates':
+            return next();
+            
+        case '/listAssociateByCnpj':
             return next();
 
-        case '':
+        case '/authentication':
             return next();
 
-        case '':
+        case '/newAssociate':
             return next();
 
-        case '':
+        case '/deleteAssociate':
             return next();
 
-        case '':
+        case '/updateAssociate':
             return next();
 
         default:

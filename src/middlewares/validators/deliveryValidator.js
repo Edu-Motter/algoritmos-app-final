@@ -6,16 +6,16 @@ function validade(req, res, next) {
         case '/listAllClients':
             return next();
 
-        case '/listClientByCnpj':
+        case '':
             return next();
 
-        case '/listClientById':
+        case '':
             return next();
 
-        case '/deleteClient':
+        case '':
             return next();
 
-        case '/updateClient':
+        case '':
             return next();
 
         default:

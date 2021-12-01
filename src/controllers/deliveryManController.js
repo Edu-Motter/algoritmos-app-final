@@ -10,6 +10,19 @@ function passwordValidation(password) {
   }
 }
 
+function generateToken(id){
+  console.log(process.env.JWT_SECRET);
+  process.env.JWT_SECRET = Math.random().toString(36).slice(-20);
+  console.log(process.env.JWT_SECRET);
+
+  const token = jwt.sign({ id }, process.env.JWT_SECRET, 
+      {expiresIn : 86400} //24hrs
+  );
+  
+  console.log(token);
+  return token;
+}
+
 module.exports = {
   
     async listAllDeliveryMen(req, res){
@@ -29,17 +42,17 @@ module.exports = {
         const {associateId, name, cpf, password, phone} = req.body;
          if (!name || !cpf || !password || !phone || !associateId){
             return res.status(400).json({
-                msg:"Dados obrigatórios não foram preenchidos"
+                msg:"Dados obrigatï¿½rios nï¿½o foram preenchidos"
             });
          }
          if(cpf.length != 11){
             return res.status(400).json({
-              msg:"CPF inválido"
+              msg:"CPF invï¿½lido"
           });
          }
          if(!passwordValidation(password)){
             return res.status(400).json({
-              msg:"Senha Inválida! A senha deve conter 8 caracteres, no mínimo 1 letra e 1 número!"
+              msg:"Senha Invï¿½lida! A senha deve conter 8 caracteres, no mï¿½nimo 1 letra e 1 nï¿½mero!"
             })
          }
 
@@ -57,7 +70,7 @@ module.exports = {
       
 
          if(deliverymanExists){
-          return res.status(403).json({msg:"Deliveryman já cadastrado"});
+          return res.status(403).json({msg:"Deliveryman jï¿½ cadastrado"});
          }else{
             const d = await DeliveryMan.create({
               associateId,
@@ -199,9 +212,38 @@ module.exports = {
     });
 
     if(deletedDeliveryman){
-        res.status(200).json({msg:"Entregador excluído com sucesso!"});
+        res.status(200).json({msg:"Entregador excluï¿½do com sucesso!"});
     }else{
-        res.status(404).json({msg:"Entregador não encontrado"});
+        res.status(404).json({msg:"Entregador nï¿½o encontrado"});
     }
-  }
+  },
+
+  async authentication(req, res){
+    //!todo: Reescrever: somente fiz copia para nao esquecermos!!!
+
+    const cnpj = req.body.cnpj;
+    const password = req.body.password;
+    if (!cnpj || !password){
+        res.status(400).json({ msg :  "CNPJ e Password sÃ£o obrigatÃ³rios" });
+    }
+
+     try {
+        const associate = await Associate.findOne({
+            where: { cnpj },
+        });
+
+        if (!associate){
+            return  res.status(404).json({msg:"UsuÃ¡rio ou Senha invÃ¡lidos."})
+        } else {
+            if (bcrypt.compareSync(password, associate.password)){
+                const token = generateToken(associate.id);
+                return res.status(200).json({msg : "Autenticado com sucesso.", token : token});
+            } else {
+                return res.status(404).json({msg: "UsuÃ¡rio ou Senha invÃ¡lidos A."});
+            }
+        }
+     } catch(error){
+         return res.status(500).json({ msg : "Erro interno no servidor", error: error });
+     }
+}
 }
