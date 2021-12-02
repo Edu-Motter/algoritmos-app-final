@@ -2,39 +2,42 @@ const Joi = require("joi");
 
 const newValidation = Joi.object().keys({
     associateId: Joi.number()
-        .integer()
-        .required(),
+    .integer()
+    .required(),
 
     name: Joi.string()
-        .required(),
+    .required(),
 
     cpf: Joi.string()
-        .min(13)
-        .pattern(/^\d{3}\.\d{3}\.\d{3}\-\d{2}$/)
-        .required(),
+    .min(13)
+    .pattern(/^\d{3}\.\d{3}\.\d{3}\-\d{2}$/)
+    .required(),
 
     password: Joi.string()
-        .min(8)
-        .pattern(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/)
-        .required(),
+    .min(8)
+    .pattern(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/)
+    .required(),
 
     phone: Joi.string(),
 });
 
 const updateValidation = Joi.object().keys({
-    associateId: Joi.number()
-        .integer()
-        .required(),
+    id: Joi.number()
+    .integer()
+    .required(),
 
+    associateId: Joi.number()
+    .integer(),
+        
     name: Joi.string(),
 
     cpf: Joi.string()
-        .min(13)
-        .pattern(/^\d{3}\.\d{3}\.\d{3}\-\d{2}$/),
+    .min(13)
+    .pattern(/^\d{3}\.\d{3}\.\d{3}\-\d{2}$/),
 
     password: Joi.string()
-        .min(8)
-        .pattern(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/),
+    .min(8)
+    .pattern(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/),
         
     phone: Joi.string(),
 });

@@ -36,7 +36,7 @@ module.exports = {
         if (associates){
             return res.status(200).json({ associates });
         }else{
-            return res.status(404).json({msg: "Não foi possivel encontrar clientes."});
+            return res.status(404).json({msg: "Nï¿½o foi possivel encontrar clientes."});
         }
     },
 
@@ -57,10 +57,6 @@ module.exports = {
 
     async searchAssociateByCnpj(req, res){
         const cnpj = req.query.cnpj;
-        if (!cnpj)
-            res.status(400).json({
-                msg:"parametro obrigatorio vazio",
-            });
 
         const associate = await Associate.findOne({
             where: {cnpj: cnpj },
@@ -70,11 +66,10 @@ module.exports = {
           if (associate){
             return res.status(200).json({associate});
           }else{
-            return res.status(404).json({msg:"Não há associados com esse cnpj"});
+            return res.status(404).json({msg:"Nï¿½o hï¿½ associados com esse cnpj"});
           } 
-        } else res.status(404).json({msg:"Não foi possível encontrar o associado"});
-    }
-    ,
+        } else res.status(404).json({msg:"Nï¿½o foi possï¿½vel encontrar o associado"});
+    },
 
     async updateAssociate(req, res){
         const associateId = req.body.id;
@@ -117,7 +112,7 @@ module.exports = {
         const passwordValid = passwordValidation(password);
        
         if(!passwordValid){
-            return res.status(400).json({msg: "Senha Inválida! A senha deve conter 8 caracteres, no mínimo 1 letra e 1 número!"});
+            return res.status(400).json({msg: "Senha Invï¿½lida! A senha deve conter 8 caracteres, no mï¿½nimo 1 letra e 1 nï¿½mero!"});
         }
 
         const isAssociateNew = await Associate.findOne({
