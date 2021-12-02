@@ -11,5 +11,6 @@ deliveryManRouter.get("/searchDeliveryManByCpf", validation, deliveryManControll
 deliveryManRouter.get("/searchDeliveryMenByAssociate", validation, deliveryManController.searchDeliveryMenByAssociate);
 deliveryManRouter.put("/updateDeliveryMan", validation, deliveryManController.updateDeliveryMan);
 deliveryManRouter.delete("/deleteDeliveryman", validation, deliveryManController.deleteDeliveryman);
+deliveryManRouter.post("/authentication", deliveryManController.authentication);
 
 module.exports = deliveryManRouter;

@@ -4,9 +4,11 @@ const deliveryController = require("../controllers/deliveryController");
 const auth = require("../middlewares/auth");
 
 deliveryRouter.post("/newDelivery", deliveryController.newDelivery);
-//deliveryRouter.delete("/deleteAppointment", auth, deliveryController.deleteAppointment);
+deliveryRouter.delete("/deleteDelivery", deliveryController.deleteDelivery);
 deliveryRouter.get("/listAllDeliveries",  deliveryController.listAllDeliveries);
-//deliveryRouter.get("/searchAppointmentByPatientId", auth, deliveryController.findAppointmentByPatientId);
-//deliveryRouter.get("/searchAppointmentByPhysicianId", auth, deliveryController.findAppointmentByPhysicianId);
+deliveryRouter.put("/updateDelivery", deliveryController.updateDelivery);
+deliveryRouter.get("/listAllDelivered", deliveryController.listAllDelivered);
+deliveryRouter.get("/listAllPending", deliveryController.listAllPending);
+deliveryRouter.get("/listAllByDeliveryman", deliveryController.listAllByDeliveryman);
 
 module.exports = deliveryRouter;

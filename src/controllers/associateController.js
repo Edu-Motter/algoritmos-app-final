@@ -1,16 +1,10 @@
 const Associate = require("../models/Associate");
+const Client = require("../models/Client");
 const bcrypt = require("bcryptjs");
 const Sequelize = require("sequelize");
 const jwt = require("jsonwebtoken");
 const Delivery = require("../models/Delivery");
 
-function passwordValidation(password) {
-  if (password.length < 8 || !password.match(/[a-zA-Z]/g) || !password.match(/[0-9]+/)){
-    return false;
-  }else{
-    return true;
-  }
-}
 
 function generateToken(id){
     console.log(process.env.JWT_SECRET);
@@ -73,54 +67,44 @@ module.exports = {
 
     async updateAssociate(req, res){
         const associateId = req.body.id;
-        const associate = req.body.data;
+        const associate = req.body;
        
-        if (!associateId){
-          return res.status(400).json({msg:"ID do associado vazio"});
+        const salt = bcrypt.genSaltSync(12);
+        const hash = bcrypt.hashSync(associate.password, salt);
+        associate.password = hash;
+
+        const associateExists = await Associate.findByPk(associateId);
+        if(!associateExists){  
+          return res.status(404).json({msg:"Associado nao encontrado"});
         }
-        else {
-            const associateExists = await Associate.findByPk(associateId);
-            if(!associateExists){  
-              return res.status(404).json({msg:"Associado nao encontrado"});
-            }
-            else {
-                if (associate.cnpj || associate.companyName ){
-                    await Associate.update(associate,{
-                        where:{id:associateId},
-                    }).catch((error) => {
-                      return res.status(500).json({
-                        msg:"Erro interno no servidor",
-                        error:error,
-                      });
-                    })
-                    return res.status(200).json({msg:"Associado atualizado com sucesso"});
-                } else
-                    return res.status(400).json({msg:"Campos obrigatorios nao preenchidos"});
-                }
-            }
+        
+        await Associate.update(associate,{
+            where:{id:associateId},
+        }).catch((error) => {
+          return res.status(500).json({
+            msg:"Erro interno no servidor",
+            error:error,
+          });
+        });
+        return res.status(200).json({msg:"Associado atualizado com sucesso"});
+            
+        
+          
     },
 
     async newAssociate(req, res){
 
         const {cnpj, companyName, password, address} = req.body;
-        if(!cnpj || !companyName || !password || !address){
-            return res.status(400).json({
-                msg: "Dados obrigatorios nao foram preenchidos"
-            });
-        }
-
-        const passwordValid = passwordValidation(password);
-       
-        if(!passwordValid){
-            return res.status(400).json({msg: "Senha Invï¿½lida! A senha deve conter 8 caracteres, no mï¿½nimo 1 letra e 1 nï¿½mero!"});
-        }
-
+  
         const isAssociateNew = await Associate.findOne({
             where:{cnpj},
-        });       
+        });   
+        const isClientCnpj = await Client.findOne({
+          where:{cnpj}
+        });    
 
-        if (isAssociateNew)
-            return res.status(403).json({msg:"Associado ja foi cadastrado"});
+        if (isAssociateNew || isClientCnpj)
+            return res.status(403).json({msg:"Este CNPJ já está cadastrado!"});
         else {
 
             const salt = bcrypt.genSaltSync(12);

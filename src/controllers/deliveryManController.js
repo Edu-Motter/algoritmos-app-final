@@ -1,25 +1,17 @@
 const DeliveryMan = require("../models/DeliveryMan");
 const Sequelize = require("sequelize");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
-function passwordValidation(password) {
-  if (password.length < 8 || !password.match(/[a-zA-Z]/g) || !password.match(/[0-9]+/)){
-    return false;
-  }else{
-    return true;
-  }
-}
 
 function generateToken(id){
-  console.log(process.env.JWT_SECRET);
-  process.env.JWT_SECRET = Math.random().toString(36).slice(-20);
-  console.log(process.env.JWT_SECRET);
 
-  const token = jwt.sign({ id }, process.env.JWT_SECRET, 
-      {expiresIn : 86400} //24hrs
-  );
-  
-  console.log(token);
+  process.env.JWT_SECRET = Math.random().toString(36).slice(-20);
+
+    const token = jwt.sign({ id, isAssociate: false }, process.env.JWT_SECRET, 
+        {expiresIn : 18000} //24hrs
+    );
+
   return token;
 }
 
@@ -40,21 +32,7 @@ module.exports = {
 
     async newDeliveryMan(req, res){
         const {associateId, name, cpf, password, phone} = req.body;
-         if (!name || !cpf || !password || !phone || !associateId){
-            return res.status(400).json({
-                msg:"Dados obrigat�rios n�o foram preenchidos"
-            });
-         }
-         if(cpf.length != 11){
-            return res.status(400).json({
-              msg:"CPF inv�lido"
-          });
-         }
-         if(!passwordValidation(password)){
-            return res.status(400).json({
-              msg:"Senha Inv�lida! A senha deve conter 8 caracteres, no m�nimo 1 letra e 1 n�mero!"
-            })
-         }
+        
 
         const salt = bcrypt.genSaltSync(12);
         const hash = bcrypt.hashSync(password, salt);
@@ -70,7 +48,7 @@ module.exports = {
       
 
          if(deliverymanExists){
-          return res.status(403).json({msg:"Deliveryman j� cadastrado"});
+          return res.status(403).json({msg:"Deliveryman j� cadastrado"});
          }else{
             const d = await DeliveryMan.create({
               associateId,
@@ -91,11 +69,7 @@ module.exports = {
     },
 
     async searchDeliveryManByCpf(req, res){
-        const cpf = req.query.cpf;
-        if (!cpf)
-            return res.status(400).json({
-                msg:"CPF do entregador n�o informado"
-            });       
+        const cpf = req.query.cpf;    
 
         const deliverymen = await DeliveryMan.findAll({
             where:[
@@ -108,20 +82,15 @@ module.exports = {
         if(deliverymen.length > 0) 
             return res.status(200).json({deliverymen});            
         else 
-            return res.status(404).json({msg:"N�o foi poss�vel encontrar nenhum entregador com esse cpf "}); 
+            return res.status(404).json({msg:"N�o foi poss�vel encontrar nenhum entregador com esse cpf "}); 
     },
 
     async searchDeliveryManById(req, res){
-      const id = req.query.id;
-      if (!id)
-          return res.status(400).json({
-              msg:"ID do entregador n�o informado"
-          });       
+      const id = req.query.id;      
 
       const deliverymen = await DeliveryMan.findAll({
-          where:[
-            {id: id},
-          ]
+          where:{id: id},
+          
       }).catch(async (error) => {
           return res.status(500).json({msg:"Erro interno no servidor"});
       });
@@ -133,16 +102,11 @@ module.exports = {
   },
 
     async searchDeliveryMenByAssociate(req, res){
-         const id = req.query.id;
-         if (!id)
-             return res.status(400).json({
-                 msg:"Id do associado n�o foi informado"
-             });       
+         const id = req.query.id;      
 
          const deliverymen = await DeliveryMan.findAll({
-             where:[
-               {associateId: id},
-             ]
+             where:{associateId: id},
+             
          }).catch(async (error) => {
              return res.status(500).json({msg:"Erro interno no servidor"});
          });
@@ -158,25 +122,10 @@ module.exports = {
 
         const newData = req.body.data;
 
-        if(!deliverymanId){
-          return res.status(400).json({
-            msg:"ID do entregador n�o inserido"
+        if(!newData){
+          return res.status(422).json({
+            msg:"Nenhum dado informado"
           });
-        }
-        if (!newData.name || !newData.cpf || !newData.password || !newData.phone || !newData.associateId){
-             return res.status(400).json({
-                msg:"Dados obrigat�rios n�o foram preenchidos"
-            });
-        }
-        if(newData.cpf.length != 11){
-            return res.status(400).json({
-              msg:"CPF inv�lido"
-          });
-        }
-        if(!passwordValidation(newData.password)){
-           return res.status(400).json({
-             msg:"Senha Inv�lida! A senha deve conter 8 caracteres, no m�nimo 1 letra e 1 n�mero!"
-           })
         }
 
          const deliverymanExists = await DeliveryMan.findOne({
@@ -221,29 +170,31 @@ module.exports = {
   async authentication(req, res){
     //!todo: Reescrever: somente fiz copia para nao esquecermos!!!
 
-    const cnpj = req.body.cnpj;
+    const cpf = req.body.cpf;
     const password = req.body.password;
-    if (!cnpj || !password){
+    if (!cpf || !password){
         res.status(400).json({ msg :  "CNPJ e Password são obrigatórios" });
     }
 
      try {
-        const associate = await Associate.findOne({
-            where: { cnpj },
+        const deliveryman = await DeliveryMan.findOne({
+            where: { cpf },
         });
 
-        if (!associate){
+        if (!deliveryman){
             return  res.status(404).json({msg:"Usuário ou Senha inválidos."})
         } else {
-            if (bcrypt.compareSync(password, associate.password)){
-                const token = generateToken(associate.id);
-                return res.status(200).json({msg : "Autenticado com sucesso.", token : token});
+            if (bcrypt.compareSync(password, deliveryman.password)){
+                const token = generateToken(deliveryman.id);
+                if(token){
+                  return res.status(200).json({msg : "Autenticado com sucesso.", token : token});
+                }
             } else {
-                return res.status(404).json({msg: "Usuário ou Senha inválidos A."});
+                return res.status(405).json({msg: "Usuário ou Senha inválidos A."});
             }
         }
      } catch(error){
-         return res.status(500).json({ msg : "Erro interno no servidor", error: error });
+         return res.status(500).json({ msg : "Erro interno do servidor", error: error });
      }
 }
 }
