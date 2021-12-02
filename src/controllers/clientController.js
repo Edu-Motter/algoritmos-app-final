@@ -20,9 +20,10 @@ module.exports = {
 
     async searchClientByCnpj(req, res){
         const cnpj = req.query.cnpj;
+        const tokenid = req.entityId;
         
         const clients = await Client.findOne({
-            where: {cnpj: cnpj},
+            where: {cnpj: cnpj, associateId: tokenid},
         });
         
         if (clients) {
@@ -88,16 +89,21 @@ module.exports = {
           msg:"Sem novas informaï¿½ï¿½es."
         });
       }
-     
-      const associateExist = await Associate.findOne({
-        where:{cnpj: newData.cnpj}
-      });
 
-      if(associateExist){
-        return res.status(422).json({
-          msg: "CNPJ jï¿½ cadastrado!"
+     if(newData.cnpj){
+        const associateExist = await Associate.findOne({
+          where:{cnpj: newData.cnpj}
         });
+
+        if(associateExist){
+          return res.status(422).json({
+            msg: "CNPJ já cadastrado!"
+          });
+        }
+
       }
+
+      
        const clientExists = await Client.findOne({
           where:{id: clientId}
        });

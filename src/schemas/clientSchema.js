@@ -50,7 +50,7 @@ const listByIdValidation = Joi.object().keys({
 
 
 module.exports.newValidation = newValidation;
-module.exports.updateVandation = updateValidation;
+module.exports.updateValidation = updateValidation;
 module.exports.deleteValidation = deleteValidation;
 module.exports.listByCnpjValidation = listByCnpjValidation;
 module.exports.listByIdValidation = listByIdValidation;

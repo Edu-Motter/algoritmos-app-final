@@ -1,9 +1,6 @@
 const Joi = require("joi");
 
 const newValidation = Joi.object().keys({
-    associateId: Joi.number()
-    .integer()
-    .required(),
 
     name: Joi.string()
     .required(),

@@ -32,6 +32,9 @@ module.exports = {
 
     async newDeliveryMan(req, res){
         const {associateId, name, cpf, password, phone} = req.body;
+        const tokenId = req.entityId;
+
+
         const deliverymanExists = await DeliveryMan.findOne({
              where: {cpf},
         }).catch((error) => {
@@ -49,7 +52,7 @@ module.exports = {
           const hash = bcrypt.hashSync(password, salt);
 
           const d = await DeliveryMan.create({
-            associateId,
+            associateId: tokenId,
             name,
             cpf,
             password: hash,
@@ -67,14 +70,11 @@ module.exports = {
 
     async searchDeliveryManByCpf(req, res){
         const cpf = req.query.cpf;
-        if (!cpf)
-            return res.status(400).json({
-                msg:"CPF do entregador nï¿½o informado"
-            });       
+        const tokenId = req.entityId;  
 
         const deliverymen = await DeliveryMan.findAll({
             where:[
-              {cpf: cpf},
+              {cpf: cpf, associateId: tokenId},
             ]
         }).catch(async (error) => {
             return res.status(500).json({msg:"Erro interno no servidor"});
@@ -83,35 +83,28 @@ module.exports = {
         if(deliverymen.length > 0) 
             return res.status(200).json({deliverymen});            
         else 
-            return res.status(404).json({msg:"Nï¿½o foi possï¿½vel encontrar nenhum entregador com esse cpf "}); 
+            return res.status(404).json({msg:"Não foi possível encontrar nenhum entregador com esse cpf "}); 
     },
 
     async searchDeliveryManById(req, res){
       const id = req.query.id;
-      if (!id)
-          return res.status(400).json({
-              msg:"ID do entregador nï¿½o informado"
-          });       
+      const tokenId = req.entityId;      
 
-      const deliverymen = await DeliveryMan.findAll({
-          where:{id: id},
-          
+      const deliverymen = await DeliveryMan.findOne({
+          where:{id: id, associateId: tokenId},
       }).catch(async (error) => {
           return res.status(500).json({msg:"Erro interno no servidor"});
       });
 
-      if(deliverymen.length > 0) 
+      if(deliverymen)
           return res.status(200).json({deliverymen});            
       else 
-          return res.status(404).json({msg:"Nï¿½o foi possï¿½vel encontrar nenhum entregador com esse id "}); 
+          return res.status(404).json({msg:"Não foi possível encontrar nenhum entregador com esse id "}); 
   },
 
     async searchDeliveryMenByAssociate(req, res){
-         const id = req.query.id;
-         if (!id)
-             return res.status(400).json({
-                 msg:"Id do associado nï¿½o foi informado"
-             });       
+         
+        const id = req.query.id;
 
          const deliverymen = await DeliveryMan.findAll({
              where:{associateId: id},
@@ -129,40 +122,31 @@ module.exports = {
   async updateDeliveryMan(req, res){
     
         const deliverymanId = req.body.id;
+        const tokenId = req.entityId;
 
         const newData = req.body;
 
-        if(!deliverymanId){
-          return res.status(400).json({
-            msg:"ID do entregador nï¿½o inserido"
-          });
+        if(newData.password){
+          const salt = bcrypt.genSaltSync(12);
+          const hash = bcrypt.hashSync(newData.password, salt);
+          
+          newData.password = hash;
         }
-        if (!newData.name || !newData.cpf || !newData.password || !newData.phone || !newData.associateId){
-             return res.status(400).json({
-                msg:"Dados obrigatï¿½rios nï¿½o foram preenchidos"
-            });
-        }
-        if(newData.cpf.length != 11){
-            return res.status(400).json({
-              msg:"CPF invï¿½lido"
-          });
-        }
-        if(!passwordValidation(newData.password)){
-           return res.status(400).json({
-             msg:"Senha Invï¿½lida! A senha deve conter 8 caracteres, no mï¿½nimo 1 letra e 1 nï¿½mero!"
-           })
-        }
-
-        const salt = bcrypt.genSaltSync(12);
-        const hash = bcrypt.hashSync(newData.password, salt);
-      
-        newData.password = hash;
 
         const deliverymanExists = await DeliveryMan.findOne({
            where:{id: deliverymanId}
         });
+
+        
         if(deliverymanExists){
-         await DeliveryMan.update(newData,{
+          
+          if(deliverymanExists.associateId != tokenId){
+            return res.status(405).json({
+              msg: "Não autorizado."
+            });
+          }
+
+         const updated = await DeliveryMan.update(newData,{
            where:{id:deliverymanId}
          }).catch((error) => { 
            return res.status(500).json({
@@ -170,8 +154,12 @@ module.exports = {
              erro: error,
            });
          });
+          
+         if(updated){
           return res.status(200).json({msg:"Entregador alterado com sucesso."});
-        }else{
+         }
+        }else
+          {
           return res.status(500).json({msg:"Nï¿½o foi possï¿½vel encontrar o entregador."})
         }
   },    

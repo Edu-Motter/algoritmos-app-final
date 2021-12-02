@@ -29,6 +29,7 @@ module.exports = {
           msg:"Cliente não encontrado!",
         });
       }
+
       const deliveryman = await DeliveryMan.findOne({
         where:{id: deliveryManId}
       }).catch((error) => {
@@ -43,7 +44,7 @@ module.exports = {
             msg:"Entregador não encontrado!",
           });
       }
-      
+
       if(client.associateId != tokenId){
         return res.status(405).json({
           msg:"Não autorizado."
@@ -155,6 +156,7 @@ module.exports = {
             error:error,
           });
         });
+        
         if(!deliveryman){
           return res.status(404).json({
             msg:"Entregador não encontrado!",
@@ -332,52 +334,51 @@ module.exports = {
 
     async endDelivery(req,res){
       const deliveryId = req.body.id;
-      const price = req.body.price;
-      const deliverymantokenid = req.entityId;
- 
+      const value = req.body.value;
+
+      const tokenId = req.entityId;
 
       const delivery = await Delivery.findOne({
         where:{id: deliveryId}
       }).catch((error) => {
         return res.status(500).json({
-          msg:"Erro interno no servidor."
+          msg: "Erro interno no servidor",
+          error: error,
         });
       });
 
-      if(!delivery){
-        return res.status(404).json({
-          msg:"Entrega não encontrada!",
-          error:error,
+      if(delivery){
+        if(delivery.deliveryManId != tokenId){
+          return res.status(405).json({
+            msg:"Não autorizado"
+          });
+        }
+
+        const newDelivery = {
+          value:value,
+          delivered: true,
+          deliveredAt: Date.now()
+        }
+        const updated = await Delivery.update(newDelivery,{
+          where:{id: deliveryId}
+        }).catch((error) => {
+          return res.status(500).json({
+            msg:"Erro interno no servidor",
+            error: error,
+          });
         });
-      }
 
-      const deliverymanId = delivery.deliveryManId;
+        if(updated){
 
-      if(deliverymantokenid != deliverymanId){
-        return res.status(405).json({
-          msg: "Não autorizado."
-        });
-      }
+          return res.status(200).json({
+            msg:"Entrega concluída com sucesso!"
+          });
 
-      delivery.value = price;
-      delivery.delivered = true;
-      delivery.deliveredAt = Date.now();
-
-      console.log(delivery);
-
-      const updatedDelivery = await Delivery.update(delivery,{
-        where:{id:delivery.id}
-      }).catch((error) => {
-        return res.status(500).json({
-          msg:"Erro interno no servidor",
-          error:error,
-        });
-      });
-      
-      if(updatedDelivery){
-        return res.status(200).json({
-          msg: "Entrega finalizada com sucesso!"
-        });
+        }else{
+          return res.status(500).json({
+            msg:"Erro desconhecido"
+          });
+        }
       }
     }
 }

@@ -7,7 +7,7 @@ const validation =  require("../middlewares/validators/deliveryMenValidator");
 deliveryManRouter.get("/listAllDeliveryMen", auth, validation, deliveryManController.listAllDeliveryMen);
 deliveryManRouter.get("/searchDeliveryManById", auth, validation, deliveryManController.searchDeliveryManById);
 deliveryManRouter.get("/searchDeliveryManByCpf", auth,validation, deliveryManController.searchDeliveryManByCpf);
-deliveryManRouter.get("/searchDeliveryMenByAssociate", auth, validation, deliveryManController.searchDeliveryMenByAssociate);
+deliveryManRouter.get("/searchDeliveryMenByAssociate", validation, deliveryManController.searchDeliveryMenByAssociate);
 
 deliveryManRouter.post("/newDeliveryMan", auth, validation, deliveryManController.newDeliveryMan);
 deliveryManRouter.put("/updateDeliveryMan", auth, validation, deliveryManController.updateDeliveryMan);

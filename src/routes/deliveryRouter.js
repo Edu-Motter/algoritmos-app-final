@@ -12,6 +12,6 @@ deliveryRouter.get("/listAllPending", deliveryController.listAllPending);
 deliveryRouter.get("/listAllByDeliveryman", deliveryController.listAllByDeliveryman);
 deliveryRouter.get("/listAllDeliveredByDeliveryman", auth, deliveryController.listAllDeliveredByDeliveryman);
 deliveryRouter.get("/listAllPendingByDeliveryman", auth, deliveryController.listAllPendingByDeliveryman);
-deliveryRouter.post("/endDelivery", auth, deliveryController.endDelivery);
+deliveryRouter.put("/endDelivery", auth, deliveryController.endDelivery);
 
 module.exports = deliveryRouter;
