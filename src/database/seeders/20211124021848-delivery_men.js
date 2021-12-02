@@ -29,8 +29,8 @@ module.exports = {
         {
           associateId: 2,
           name: "Deliveryman Test 4",
-          cpf: "11112111159",
-          password: "$2a$12$ImHG0RphH01UK80moIFnyO1J217waiaFoELKh0TldySCNjOpWM76G",
+          cpf: "464.836.158-09",
+          password: "$2a$12$iRlAQI2QZgmK/ahbAZDamOUKt.lJIV.niARyACRqhpjE4xXIpA5gi",
           phone: "(41) 99999-9999",
         }
       ]

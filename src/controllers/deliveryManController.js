@@ -118,9 +118,10 @@ module.exports = {
     },
     
   async updateDeliveryMan(req, res){
+    
         const deliverymanId = req.body.id;
 
-        const newData = req.body.data;
+        const newData = req.body;
 
         if(!newData){
           return res.status(422).json({
@@ -128,19 +129,23 @@ module.exports = {
           });
         }
 
-         const deliverymanExists = await DeliveryMan.findOne({
-            where:{id: deliverymanId}
-         });
+        const salt = bcrypt.genSaltSync(12);
+        const hash = bcrypt.hashSync(newData.password, salt);
+      
+        newData.password = hash;
 
-         if(deliverymanExists){
-          await DeliveryMan.update(newData,{
-            where:{id:deliverymanId}
-          }).catch((error) => { 
-            return res.status(500).json({
-              msg:"Erro interno no servidor",
-              erro: error,
-            });
-          });
+        const deliverymanExists = await DeliveryMan.findOne({
+           where:{id: deliverymanId}
+        });
+        if(deliverymanExists){
+         await DeliveryMan.update(newData,{
+           where:{id:deliverymanId}
+         }).catch((error) => { 
+           return res.status(500).json({
+             msg:"Erro interno no servidor",
+             erro: error,
+           });
+         });
           return res.status(200).json({msg:"Entregador alterado com sucesso."});
         }else{
           return res.status(500).json({msg:"N�o foi poss�vel encontrar o entregador."})

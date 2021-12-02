@@ -283,4 +283,93 @@ module.exports = {
         return res.status(404).json({msg: "Não foi possível encontrar entregas."}); 
       }    
     },
+
+    async listAllDeliveredByDeliveryman(req,res){
+      const deliverymanId = req.entityId;
+
+      const deliveries = await Delivery.findAll({
+        where:{delivered: true, deliveryManId: deliverymanId}
+      }).catch((error) => {
+       return res.status(500).json({
+          msg: "Erro interno no servidor", 
+          error: error
+         });
+      });
+
+      if (deliveries){
+        return res.status(200).json({ deliveries });
+      }else{
+        return res.status(404).json({msg: "Não foi possível encontrar entregas."}); 
+      }    
+    },
+
+    async listAllPendingByDeliveryman(req,res){
+      const deliverymanId = req.entityId;
+
+      const deliveries = await Delivery.findAll({
+        where:{delivered: false, deliveryManId:deliverymanId}
+      }).catch((error) => {
+       return res.status(500).json({
+          msg: "Erro interno no servidor", 
+          error: error
+         });
+      });
+
+      if (deliveries){
+        return res.status(200).json({ deliveries });
+      }else{
+        return res.status(404).json({msg: "Não foi possível encontrar entregas."}); 
+      }    
+    },
+
+    async endDelivery(req,res){
+      const deliveryId = req.body.id;
+      const price = req.body.price;
+      const deliverymantokenid = req.entityId;
+ 
+
+      const delivery = await Delivery.findOne({
+        where:{id: deliveryId}
+      }).catch((error) => {
+        return res.status(500).json({
+          msg:"Erro interno no servidor."
+        });
+      });
+
+      if(!delivery){
+        return res.status(404).json({
+          msg:"Entrega não encontrada!",
+          error:error,
+        });
+      }
+
+      const deliverymanId = delivery.deliveryManId;
+
+      if(deliverymantokenid != deliverymanId){
+        return res.status(405).json({
+          msg: "Não autorizado."
+        });
+      }
+
+      delivery.value = price;
+      delivery.delivered = true;
+      delivery.deliveredAt = Date.now();
+
+      console.log(delivery);
+
+      const updatedDelivery = await Delivery.update(delivery,{
+        where:{id:delivery.id}
+      }).catch((error) => {
+        return res.status(500).json({
+          msg:"Erro interno no servidor",
+          error:error,
+        });
+      });
+      
+      if(updatedDelivery){
+        return res.status(200).json({
+          msg: "Entrega finalizada com sucesso!"
+        });
+      }
+    }
 }
