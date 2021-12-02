@@ -69,6 +69,7 @@ const searchByAssociateValidation = Joi.object().keys({
 
 module.exports.newValidation = newValidation;
 module.exports.updateValidation = updateValidation;
+module.exports.deleteValidation = updateValidation;
 module.exports.searchByCpfValidation = searchByCpfValidation;
 module.exports.searchByIdValidation = searchByIdValidation;
 module.exports.searchByAssociateValidation = searchByAssociateValidation;

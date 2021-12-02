@@ -2,7 +2,8 @@ const {
     newValidation,
     updateValidation,
     deleteValidation,
-    listByCnpjValidation } = require("../../schemas/associateSchema");
+    listByCnpjValidation,
+    authValidation } = require("../../schemas/associateSchema");
 
 
 function validade(req, res, next) {
@@ -54,7 +55,14 @@ function validade(req, res, next) {
 
         //Routes for Associate
         case '/authentication':
-            return next();
+            const authBody = authValidation.validate(req.body);
+            if (authBody.error){
+                return res.status(422).json(authBody.error.details);
+            } else if (authBody.value) {
+                return next();
+            } else {
+                return res.status(500);
+            }
     
         default:
             return next();
