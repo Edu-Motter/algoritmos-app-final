@@ -2,6 +2,7 @@ const DeliveryMan = require("../models/DeliveryMan");
 const Sequelize = require("sequelize");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const Delivery = require("../models/Delivery");
 
 
 function generateToken(id){
@@ -182,6 +183,39 @@ module.exports = {
     }else{
         res.status(404).json({msg:"Entregador nï¿½o encontrado"});
     }
+  },
+
+  async financialReport(req,res){
+    const tokenId = req.entityId;
+    var total = 0;
+
+    const deliveries = await Delivery.findAll({
+      where:{deliveryManId: tokenId, delivered: true}
+    }).catch((error) => {
+      return res.status(500).json({
+        msg:"Erro interno do servidor"
+      });
+    });
+
+    if(deliveries){
+      deliveries.forEach(item => {
+        console.log(item.value);
+        total = total + item.value;
+      });
+
+      areceber = (total * 0.7);
+
+      return res.status(200).json({
+        valorTotal: total,
+        valorReceber: areceber
+      })
+
+    }else{
+      return res.status(404).json({
+        msg:"Não foi possivel encontrar entregas."
+      })
+    }
+
   },
 
   async authentication(req, res){
