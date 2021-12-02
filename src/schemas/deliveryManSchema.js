@@ -67,9 +67,23 @@ const searchByAssociateValidation = Joi.object().keys({
     .required(),
 });
 
+const authValidation = Joi.object().keys({
+    cpf: Joi.string()
+    .min(13)
+    .pattern(/^\d{3}\.\d{3}\.\d{3}\-\d{2}$/)
+    .required(),
+
+    password: Joi.string()
+    .min(8)
+    .pattern(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/)
+    .required(),
+});
+
 module.exports.newValidation = newValidation;
 module.exports.updateValidation = updateValidation;
-module.exports.deleteValidation = updateValidation;
+module.exports.deleteValidation = deleteValidation;
 module.exports.searchByCpfValidation = searchByCpfValidation;
 module.exports.searchByIdValidation = searchByIdValidation;
+
 module.exports.searchByAssociateValidation = searchByAssociateValidation;
+module.exports.authValidation = authValidation;

@@ -5,10 +5,10 @@ const auth = require("../middlewares/auth");
 const validation = require("../middlewares/validators/clientValidator");
 
 clientRouter.get("/listAllClients",  validation, clientController.listAllClients);
-clientRouter.get("/listClientByCnpj",  validation, clientController.searchClientByCnpj);
-clientRouter.get("/listClientById",  validation, clientController.searchClientById);
-clientRouter.delete("/deleteClient",  validation, clientController.deleteClient);
-clientRouter.put("/updateClient",  validation, clientController.updateClient)
-clientRouter.post("/newClient",  validation, clientController.newClient);
+clientRouter.get("/listClientByCnpj", auth, validation, clientController.searchClientByCnpj);
+clientRouter.get("/listClientById", auth, validation, clientController.searchClientById);
+clientRouter.delete("/deleteClient", auth, validation, clientController.deleteClient);
+clientRouter.put("/updateClient", auth, validation, clientController.updateClient)
+clientRouter.post("/newClient", auth, validation, clientController.newClient);
 
 module.exports = clientRouter;

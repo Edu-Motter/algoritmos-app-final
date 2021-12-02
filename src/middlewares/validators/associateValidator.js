@@ -63,7 +63,17 @@ function validade(req, res, next) {
             } else {
                 return res.status(500);
             }
-    
+
+        case '/update':
+            const update = updateValidation.validate(req.body);
+            if (update.error){
+                return res.status(422).json(update.error.details);
+            } else if (update.value) {
+                return next();
+            } else {
+                return res.status(500);
+            }   
+
         default:
             return next();
     }

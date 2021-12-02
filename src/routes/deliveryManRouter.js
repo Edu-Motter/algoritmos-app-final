@@ -4,13 +4,15 @@ const deliveryManController = require("../controllers/deliveryManController");
 const auth = require("../middlewares/auth");
 const validation =  require("../middlewares/validators/deliveryMenValidator");
 
-deliveryManRouter.get("/listAllDeliveryMen", validation, deliveryManController.listAllDeliveryMen);
-deliveryManRouter.post("/newDeliveryMan", validation, deliveryManController.newDeliveryMan);
-deliveryManRouter.get("/searchDeliveryManById", validation, deliveryManController.searchDeliveryManById);
-deliveryManRouter.get("/searchDeliveryManByCpf", validation, deliveryManController.searchDeliveryManByCpf);
-deliveryManRouter.get("/searchDeliveryMenByAssociate", validation, deliveryManController.searchDeliveryMenByAssociate);
-deliveryManRouter.put("/updateDeliveryMan", validation, deliveryManController.updateDeliveryMan);
-deliveryManRouter.delete("/deleteDeliveryman", validation, deliveryManController.deleteDeliveryman);
-deliveryManRouter.post("/authentication", deliveryManController.authentication);
+deliveryManRouter.get("/listAllDeliveryMen", auth, validation, deliveryManController.listAllDeliveryMen);
+deliveryManRouter.get("/searchDeliveryManById", auth, validation, deliveryManController.searchDeliveryManById);
+deliveryManRouter.get("/searchDeliveryManByCpf", auth,validation, deliveryManController.searchDeliveryManByCpf);
+deliveryManRouter.get("/searchDeliveryMenByAssociate", auth, validation, deliveryManController.searchDeliveryMenByAssociate);
+
+deliveryManRouter.post("/newDeliveryMan", auth, validation, deliveryManController.newDeliveryMan);
+deliveryManRouter.put("/updateDeliveryMan", auth, validation, deliveryManController.updateDeliveryMan);
+deliveryManRouter.delete("/deleteDeliveryman", auth, validation, deliveryManController.deleteDeliveryman);
+
+deliveryManRouter.post("/authentication", validation, deliveryManController.authentication);
 
 module.exports = deliveryManRouter;

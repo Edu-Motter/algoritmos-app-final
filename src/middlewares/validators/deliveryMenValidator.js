@@ -1,32 +1,25 @@
 const { 
     newValidation, 
     updateValidation,
+    deleteValidation,
     searchByIdValidation,
     searchByCpfValidation,
-    searchByAssociateValidation } = require("../../schemas/deliveryManSchema");
-
-function generateToken(id){
-    console.log(process.env.JWT_SECRET);
-    process.env.JWT_SECRET = Math.random().toString(36).slice(-20);
-    console.log(process.env.JWT_SECRET);
-
-    const token = jwt.sign({ id }, process.env.JWT_SECRET, 
-        {expiresIn : 86400} //24hrs
-    );
-    
-    console.log(token);
-    return token;
-}
-
-    
+    searchByAssociateValidation,
+    authValidation } = require("../../schemas/deliveryManSchema");
+ 
 function validade(req, res, next) {
-    
+    var isAssociate = undefined;
     switch (req.route.path){
         
         case '/listAllDeliveryMen':
             return next();
 
         case '/newDeliveryMan':
+            isAssociate = req.isAssociate;
+            if (!isAssociate){
+                return res.status(405).json({ msg: "Não Autorizado" });
+            }
+
             const newBody = newValidation.validate(req.body);
             if (newBody.error){
                 return res.status(422).json(newBody.error.details);
@@ -35,6 +28,11 @@ function validade(req, res, next) {
             }
 
         case '/updateDeliveryMan':
+            isAssociate = req.isAssociate;
+            if (!isAssociate){
+                return res.status(405).json({ msg: "Não Autorizado" });
+            }
+
             const updateBody = updateValidation.validate(req.body);
             if (updateBody.error){
                 return res.status(422).json(updateBody.error.details);
@@ -43,14 +41,24 @@ function validade(req, res, next) {
             }
 
         case '/deleteDeliveryman':
-            //const updateBody = updateValidation.validate(req.body);
-            //if (updateBody.error){
-            //    return res.status(422).json(updateBody.error.details);
-            //} else if (updateBody.value) {
+            isAssociate = req.isAssociate;
+            if (!isAssociate){
+                return res.status(405).json({ msg: "Não Autorizado" });
+            }
+
+            const deleteBody = deleteValidation.validate(req.query);
+            if (deleteBody.error){
+               return res.status(422).json(deleteBody.error.details);
+            } else if (deleteBody.value) {
                 return next();
-            //}
+            }
 
         case '/searchDeliveryManById':
+            isAssociate = req.isAssociate;
+            if (!isAssociate){
+                return res.status(405).json({ msg: "Não Autorizado" });
+            }
+
             const searchById = searchByIdValidation.validate(req.query);
             if (searchById.error){
                 return res.status(422).json(searchById.error.details);
@@ -59,6 +67,11 @@ function validade(req, res, next) {
             }
 
         case '/searchDeliveryManByCpf':
+            isAssociate = req.isAssociate;
+            if (!isAssociate){
+                return res.status(405).json({ msg: "Não Autorizado" });
+            }
+
             const searchByCpf = searchByCpfValidation.validate(req.query);
             if (searchByCpf.error){
                 return res.status(422).json(searchByCpf.error.details);
@@ -67,13 +80,28 @@ function validade(req, res, next) {
             }
 
         case '/searchDeliveryMenByAssociate':
-            const searchByAssociate = searchByAssociateValidation.validate(req.query);
+            isAssociate = req.isAssociate;
+            if (!isAssociate){
+                return res.status(405).json({ msg: "Não Autorizado" });
+            }
+
+            searchByAssociate = searchByAssociateValidation.validate(req.query);
             if (searchByAssociate.error){
                 return res.status(422).json(searchByAssociate.error.details);
             } else if (searchByAssociate.value) {
                 return next();
             }
 
+        case '/authentication':
+            const auth = authValidation.validate(req.body);
+            if (auth.error){
+                return res.status(422).json(auth.error.details);
+            } else if (auth.value) {
+                return next();
+            } else {
+                return res.status(500);
+            }
+        
         default:
             return next();
     }
