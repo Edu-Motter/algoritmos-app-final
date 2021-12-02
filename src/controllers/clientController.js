@@ -111,16 +111,17 @@ module.exports = {
 
     async newClient(req, res){
 
-        const {companyName, cnpj, address, associateId} = req.body;
+        const {companyName, cnpj, address} = req.body;
+        const associateId = req.entityId;
     
         const isClientNew = await Client.findOne({
             where:{cnpj},
         });
 
         const associateExist = await Associate.findOne({
-          where:{cnpj: newData.cnpj}
+          where:{cnpj: cnpj}
         });
-  
+        
         if(associateExist){
           return res.status(422).json({
             msg: "CNPJ já cadastrado!"
