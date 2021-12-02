@@ -128,6 +128,20 @@ module.exports = {
         }
     },
 
+    async adminReport(req,res){
+      const isAssociate = req.isAssociate;
+      const associateId = req.entityId;
+
+      if(!isAssociate){
+        return res.status(404).json({
+          msg:"Não autorizado."
+        });
+      }
+
+      const totalClients = Client.findAll({
+        where:{associateId: associateId}
+      })
+    },
     async authentication(req, res){
 
         const cnpj = req.body.cnpj;
