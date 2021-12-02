@@ -11,5 +11,7 @@ associateRouter.get("/listAssociateByCnpj", validation, associateController.sear
 associateRouter.delete("/deleteAssociate", validation, associateController.deleteAssociate);
 associateRouter.put("/updateAssociate", validation, associateController.updateAssociate);
 associateRouter.post("/authentication", associateController.authentication);
+associateRouter.get("/admReport", auth, associateController.adminReport);
+associateRouter.get("/financialReport", auth, associateController.financialReport);
 
 module.exports = associateRouter;

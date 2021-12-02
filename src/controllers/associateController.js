@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const Sequelize = require("sequelize");
 const jwt = require("jsonwebtoken");
 const Delivery = require("../models/Delivery");
+const DeliveryMan = require("../models/DeliveryMan");
 
 
 function generateToken(id){
@@ -138,10 +139,116 @@ module.exports = {
         });
       }
 
-      const totalClients = Client.findAll({
+      const totalClients = await Client.findAll({
         where:{associateId: associateId}
+      }).catch((error) => {
+        return res.status(500).json({
+          msg:"Erro interno no servido",
+          error:error
+        });
+      });
+
+      const totalDeliveryman = await DeliveryMan.findAll({
+        where:{associateId: associateId}
+      }).catch((error) => {
+        return res.status(500).json({
+          msg:"Erro interno no servido",
+          error:error
+        });
+      });
+
+      const totalDelivery = await Delivery.findAll({
+       where:{associateId: associateId}
+      }).catch((error) => {
+        return res.status(500).json({
+          msg:"Erro interno no servido",
+          error:error
+        });
+      });
+
+      const totalDelivered = await Delivery.findAll({
+        where:{associateId: associateId, delivered: true}
+      }).catch((error) => {
+        return res.status(500).json({
+          msg:"Erro interno no servido",
+          error:error
+        });
+      });
+
+      const totalPending = await Delivery.findAll({
+        where:{associateId: associateId, delivered: false}
+      }).catch((error) => {
+        return res.status(500).json({
+          msg:"Erro interno no servido",
+          error:error
+        });
+      });
+
+      
+
+      const valueTotalDeliveries = totalDelivery.length;
+      const valueTotalDeliveryman = totalDeliveryman.length;
+      const valueTotalClient = totalClients.length;
+      const valueTotalDelivered = totalDelivered.length;
+      const valueTotalPending = totalPending.length;
+
+      const percentDelivered = ((valueTotalDelivered/valueTotalDeliveries)*100);
+      const percentPending = ((valueTotalPending/valueTotalDeliveries)*100);
+
+      return res.status(200).json({
+        qntClientes: valueTotalClient,
+        qntEntregador: valueTotalDeliveryman,
+        qntEntregas: valueTotalDeliveries,
+        porcentagemEntregasRealizadas: percentDelivered,
+        porcentagemEntregasPendentes: percentPending,
+
+      })
+
+    },
+
+    async financialReport(req,res){
+      const isAssociate = req.isAssociate;
+      const associateId = req.entityId;
+
+      if(!isAssociate){
+        return res.status(404).json({
+          msg:"Não autorizado."
+        });
+      }
+
+      const deliveries = await Delivery.findAll({
+        where:{associateId: associateId, delivered: true }
+      }).catch((error) => {
+        return res.status(500).json({
+          msg:"Erro interno no servido",
+          error:error
+        });
+      });
+
+      if(!deliveries){
+        return res.status(404).json({
+          msg:"Entregas não encontradas."
+        });
+      }
+
+      var total = 0;
+
+      deliveries.forEach(item => {
+        total = total + item.value;
+      });
+      parteEntregador = total * 0.7;
+      parteAssociado = total - parteEntregador;
+
+      parteEntregador = parteEntregador.toFixed(2);
+      parteAssociado = parteAssociado.toFixed(2);
+
+      return res.status(200).json({
+        valotTotal: total,
+        parteEntregador:  parteEntregador,
+        parteAssociado: parteAssociado
       })
     },
+
     async authentication(req, res){
 
         const cnpj = req.body.cnpj;

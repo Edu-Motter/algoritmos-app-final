@@ -17,7 +17,7 @@ function validade(req, res, next) {
         case '/newDeliveryMan':
             isAssociate = req.isAssociate;
             if (!isAssociate){
-                return res.status(405).json({ msg: "NÃ£o Autorizado" });
+                return res.status(405).json({ msg: "Não Autorizado" });
             }
 
             const newBody = newValidation.validate(req.body);
@@ -30,7 +30,7 @@ function validade(req, res, next) {
         case '/updateDeliveryMan':
             isAssociate = req.isAssociate;
             if (!isAssociate){
-                return res.status(405).json({ msg: "NÃ£o Autorizado" });
+                return res.status(405).json({ msg: "Não Autorizado" });
             }
 
             const updateBody = updateValidation.validate(req.body);
@@ -43,7 +43,7 @@ function validade(req, res, next) {
         case '/deleteDeliveryman':
             isAssociate = req.isAssociate;
             if (!isAssociate){
-                return res.status(405).json({ msg: "NÃ£o Autorizado" });
+                return res.status(405).json({ msg: "Não Autorizado" });
             }
 
             const deleteBody = deleteValidation.validate(req.query);
@@ -56,7 +56,7 @@ function validade(req, res, next) {
         case '/searchDeliveryManById':
             isAssociate = req.isAssociate;
             if (!isAssociate){
-                return res.status(405).json({ msg: "NÃ£o Autorizado" });
+                return res.status(405).json({ msg: "Não Autorizado" });
             }
 
             const searchById = searchByIdValidation.validate(req.query);
@@ -69,7 +69,7 @@ function validade(req, res, next) {
         case '/searchDeliveryManByCpf':
             isAssociate = req.isAssociate;
             if (!isAssociate){
-                return res.status(405).json({ msg: "NÃ£o Autorizado" });
+                return res.status(405).json({ msg: "Não Autorizado" });
             }
 
             const searchByCpf = searchByCpfValidation.validate(req.query);
@@ -82,7 +82,7 @@ function validade(req, res, next) {
         case '/searchDeliveryMenByAssociate':
             isAssociate = req.isAssociate;
             if (!isAssociate){
-                return res.status(405).json({ msg: "NÃ£o Autorizado" });
+                return res.status(405).json({ msg: "Não Autorizado" });
             }
 
             searchByAssociate = searchByAssociateValidation.validate(req.query);
