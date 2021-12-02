@@ -48,14 +48,14 @@ module.exports = {
           phone: "(41) 99999-9999",
         },
         {
-          associateId: 7,
+          associateId: 5,
           name: "Deliveryman Jorge",
           cpf: "777.777.777-77",
           password: "$2a$12$ImHG0RphH01UK80moIFnyO1J217waiaFoELKh0TldySCNjOpWM76G",
           phone: "(41) 99999-9999",
         },
         {
-          associateId: 8,
+          associateId: 4,
           name: "Deliveryman Emanuel",
           cpf: "888.888.888-88",
           password: "$2a$12$ImHG0RphH01UK80moIFnyO1J217waiaFoELKh0TldySCNjOpWM76G",
