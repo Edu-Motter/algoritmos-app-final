@@ -9,7 +9,6 @@ const {
 function validade(req, res, next) {
 
     switch (req.route.path){
-        //Routes for ACP:
         case '/listAllAssociates':
             return next();
             

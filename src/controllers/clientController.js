@@ -9,13 +9,13 @@ module.exports = {
         const clients = await Client.findAll({
             order: [["companyName", "ASC"]]
         }).catch((error) => {
-            return res.status(500).json({msg: "Falha na conexão.", error: error});
+            return res.status(500).json({msg: "Falha na conexï¿½o.", error: error});
         });
 
         if (clients) 
             return res.status(200).json({ clients });
         else 
-            return res.status(404).json({msg: "Não foi possivel encontrar clientes."});
+            return res.status(404).json({msg: "Nï¿½o foi possivel encontrar clientes."});
     },
 
     async searchClientByCnpj(req, res){
@@ -28,7 +28,7 @@ module.exports = {
         if (clients) {
             return res.status(200).json({clients});
         }else{ 
-            return res.status(404).json({msg:"Não há cliente com esse cnpj"});
+            return res.status(404).json({msg:"Nï¿½o hï¿½ cliente com esse cnpj"});
         }
     },
 
@@ -42,13 +42,24 @@ module.exports = {
       if (clients) {
           return res.status(200).json({clients});
       }else{ 
-          return res.status(404).json({msg:"Não há cliente com esse cnpj"});
+          return res.status(404).json({msg:"Nï¿½o hï¿½ cliente com esse cnpj"});
       }
   },
 
     async deleteClient(req, res){
-
         const clientId = req.query.id;
+
+        const clientExists = await Client.findOne({
+          where:{id: clientId}
+        });
+        
+        if(!clientExists){
+          return res.status(404).json({msg:"Cliente nao encontrado para deletar"});
+        }
+
+        if(associateTokenId != clientExists.associateId){
+          return res.status(405).json({msg:"Nao Autorizado"});
+        }
 
         const deletedClient = await Client.destroy({
             where: {id:clientId},
@@ -60,21 +71,21 @@ module.exports = {
         });
 
         if(deletedClient){
-          return res.status(200).json({msg:"Cliente excluído com sucesso"});
+          return res.status(200).json({msg:"Cliente excluï¿½do com sucesso"});
         }
         else{ 
-          return res.status(404).json({msg:"Cliente não encontrado"});
+          return res.status(404).json({msg:"Cliente nï¿½o encontrado"});
         }
     },
 
     async updateClient(req, res){
+      const associateTokenId = req.entityId;
       const clientId = req.body.id;
-
       const newData = req.body;
 
       if(!newData){
         return res.status(422).json({
-          msg:"Sem novas informações."
+          msg:"Sem novas informaï¿½ï¿½es."
         });
       }
      
@@ -84,7 +95,7 @@ module.exports = {
 
       if(associateExist){
         return res.status(422).json({
-          msg: "CNPJ já cadastrado!"
+          msg: "CNPJ jï¿½ cadastrado!"
         });
       }
        const clientExists = await Client.findOne({
@@ -92,6 +103,10 @@ module.exports = {
        });
 
        if(clientExists){
+
+        if(associateTokenId != clientExists.associateId){
+          return res.status(404).json({msg:"Nao Autorizado"});
+        }
 
         await Client.update(newData,{
           where:{id:clientId} 
@@ -105,7 +120,7 @@ module.exports = {
         return res.status(200).json({msg:"Cliente alterado com sucesso."});
 
       }else{
-        return res.status(404).json({msg:"Não foi possível encontrar o cliente."})
+        return res.status(404).json({msg:"Nï¿½o foi possï¿½vel encontrar o cliente."})
       }
     },
 
@@ -117,6 +132,13 @@ module.exports = {
         const isClientNew = await Client.findOne({
             where:{cnpj},
         });
+        
+        if (isClientNew){
+          return res.status(403).json({
+            msg:"Cliente ja foi cadastrado"
+          });
+
+        }
 
         const associateExist = await Associate.findOne({
           where:{cnpj: cnpj}
@@ -124,16 +146,10 @@ module.exports = {
         
         if(associateExist){
           return res.status(422).json({
-            msg: "CNPJ já cadastrado!"
+            msg: "CNPJ jï¿½ cadastrado!"
           });
         }
 
-        if (isClientNew){
-          return res.status(403).json({
-            msg:"Cliente ja foi cadastrado"
-          });
-
-        }
         const client = await Client.create({
             cnpj,  
             associateId,
@@ -145,11 +161,11 @@ module.exports = {
             error:error,
           });
         });
+
         if(client){
           return res.status(201).json({msg:"Novo cliente foi adicionado"});
         }else{ 
-          return res.status(404).json({msg:"Não foi possivel cadastrar novo cliente"});
+          return res.status(404).json({msg:"Nï¿½o foi possivel cadastrar novo cliente"});
         }
-        
     },
 }

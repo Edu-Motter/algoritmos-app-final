@@ -32,12 +32,7 @@ module.exports = {
 
     async newDeliveryMan(req, res){
         const {associateId, name, cpf, password, phone} = req.body;
-        
-
-        const salt = bcrypt.genSaltSync(12);
-        const hash = bcrypt.hashSync(password, salt);
-
-         const deliverymanExists = await DeliveryMan.findOne({
+        const deliverymanExists = await DeliveryMan.findOne({
              where: {cpf},
         }).catch((error) => {
           return res.status(500).json({
@@ -46,22 +41,24 @@ module.exports = {
          });
         });
       
+        if (deliverymanExists) {
+          return res.status(403).json({msg:"Deliveryman jï¿½ cadastrado"});
+        } else {
+         
+          const salt = bcrypt.genSaltSync(12);
+          const hash = bcrypt.hashSync(password, salt);
 
-         if(deliverymanExists){
-          return res.status(403).json({msg:"Deliveryman já cadastrado"});
-         }else{
-            const d = await DeliveryMan.create({
-              associateId,
-              name,
-              cpf,
-              password: hash,
-              phone,
-
-            }).catch((error) => {
-              return  res.status(500).json({msg:"Erro interno no servidor",
-                erro: error,
-              });
-            });
+          const d = await DeliveryMan.create({
+            associateId,
+            name,
+            cpf,
+            password: hash,
+            phone,
+          }).catch((error) => {
+            return  res.status(500).json({msg:"Erro interno no servidor",
+              erro: error,
+          });
+        });
             
         return res.status(201).json({msg:"Novo entregador adicionado com sucesso"});
             
@@ -69,7 +66,11 @@ module.exports = {
     },
 
     async searchDeliveryManByCpf(req, res){
-        const cpf = req.query.cpf;    
+        const cpf = req.query.cpf;
+        if (!cpf)
+            return res.status(400).json({
+                msg:"CPF do entregador nï¿½o informado"
+            });       
 
         const deliverymen = await DeliveryMan.findAll({
             where:[
@@ -82,11 +83,15 @@ module.exports = {
         if(deliverymen.length > 0) 
             return res.status(200).json({deliverymen});            
         else 
-            return res.status(404).json({msg:"Não foi possï¿½vel encontrar nenhum entregador com esse cpf "}); 
+            return res.status(404).json({msg:"Nï¿½o foi possï¿½vel encontrar nenhum entregador com esse cpf "}); 
     },
 
     async searchDeliveryManById(req, res){
-      const id = req.query.id;      
+      const id = req.query.id;
+      if (!id)
+          return res.status(400).json({
+              msg:"ID do entregador nï¿½o informado"
+          });       
 
       const deliverymen = await DeliveryMan.findAll({
           where:{id: id},
@@ -102,7 +107,11 @@ module.exports = {
   },
 
     async searchDeliveryMenByAssociate(req, res){
-         const id = req.query.id;      
+         const id = req.query.id;
+         if (!id)
+             return res.status(400).json({
+                 msg:"Id do associado nï¿½o foi informado"
+             });       
 
          const deliverymen = await DeliveryMan.findAll({
              where:{associateId: id},
@@ -123,10 +132,25 @@ module.exports = {
 
         const newData = req.body;
 
-        if(!newData){
-          return res.status(422).json({
-            msg:"Nenhum dado informado"
+        if(!deliverymanId){
+          return res.status(400).json({
+            msg:"ID do entregador nï¿½o inserido"
           });
+        }
+        if (!newData.name || !newData.cpf || !newData.password || !newData.phone || !newData.associateId){
+             return res.status(400).json({
+                msg:"Dados obrigatï¿½rios nï¿½o foram preenchidos"
+            });
+        }
+        if(newData.cpf.length != 11){
+            return res.status(400).json({
+              msg:"CPF invï¿½lido"
+          });
+        }
+        if(!passwordValidation(newData.password)){
+           return res.status(400).json({
+             msg:"Senha Invï¿½lida! A senha deve conter 8 caracteres, no mï¿½nimo 1 letra e 1 nï¿½mero!"
+           })
         }
 
         const salt = bcrypt.genSaltSync(12);

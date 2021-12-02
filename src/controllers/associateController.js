@@ -68,14 +68,16 @@ module.exports = {
     async updateAssociate(req, res){
         const associateId = req.body.id;
         const associate = req.body;
-       
-        const salt = bcrypt.genSaltSync(12);
-        const hash = bcrypt.hashSync(associate.password, salt);
-        associate.password = hash;
-
+      
         const associateExists = await Associate.findByPk(associateId);
         if(!associateExists){  
           return res.status(404).json({msg:"Associado nao encontrado"});
+        }
+
+        if(associate.password){
+            const salt = bcrypt.genSaltSync(12);
+            const hash = bcrypt.hashSync(associate.password, salt);
+            associate.password = hash;          
         }
         
         await Associate.update(associate,{
@@ -104,7 +106,7 @@ module.exports = {
         });    
 
         if (isAssociateNew || isClientCnpj)
-            return res.status(403).json({msg:"Este CNPJ já está cadastrado!"});
+            return res.status(403).json({msg:"Este CNPJ jï¿½ estï¿½ cadastrado!"});
         else {
 
             const salt = bcrypt.genSaltSync(12);
@@ -129,13 +131,14 @@ module.exports = {
         }
     },
 
+
     async adminReport(req,res){
       const isAssociate = req.isAssociate;
       const associateId = req.entityId;
 
       if(!isAssociate){
         return res.status(404).json({
-          msg:"Não autorizado."
+          msg:"Nï¿½o autorizado."
         });
       }
 
@@ -212,7 +215,7 @@ module.exports = {
 
       if(!isAssociate){
         return res.status(404).json({
-          msg:"Não autorizado."
+          msg:"Nï¿½o autorizado."
         });
       }
 
@@ -227,7 +230,7 @@ module.exports = {
 
       if(!deliveries){
         return res.status(404).json({
-          msg:"Entregas não encontradas."
+          msg:"Entregas nï¿½o encontradas."
         });
       }
 
