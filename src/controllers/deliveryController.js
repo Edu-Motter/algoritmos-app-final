@@ -7,6 +7,7 @@ module.exports = {
 
     async newDelivery(req, res){
       const {description, clientId, deliveryManId} = req.body;
+      const tokenId = req.entityId;
         
         if (!description || !clientId || !deliveryManId ){
              return res.status(403).json({
@@ -42,9 +43,16 @@ module.exports = {
             msg:"Entregador não encontrado!",
           });
       }
+      
+      if(client.associateId != tokenId){
+        return res.status(405).json({
+          msg:"Não autorizado."
+        });
+      }
+
       if(deliveryman.associateId != client.associateId){
-        return res.status(400).json({
-          msg:"Este Deliveryman não pertence ao associado informado."
+        return res.status(405).json({
+          msg:"Não autorizado."
         });
       }
 
