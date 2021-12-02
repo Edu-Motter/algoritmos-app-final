@@ -9,77 +9,80 @@ module.exports = {
       const {description, clientId, deliveryManId} = req.body;
       const tokenId = req.entityId;
         
-        if (!description || !clientId || !deliveryManId ){
-             return res.status(403).json({
-                 error : "Dados obrigatórios não foram preenchidos"
-             });   
-         }
-
       const client = await Client.findOne({
         where:{id: clientId}
       }).catch((error) => {
         return res.status(404).json({
-          msg:"Cliente não encontrado!",
+          msg:"Cliente nï¿½o encontrado!",
           error:error,
         });
       });
 
       if(!client){
         return res.status(404).json({
-          msg:"Cliente não encontrado!",
+          msg:"Cliente nï¿½o encontrado!",
         });
       }
 
-      const deliveryman = await DeliveryMan.findOne({
-        where:{id: deliveryManId}
-      }).catch((error) => {
-        return res.status(404).json({
-          msg:"Deliveryman não encontrado!",
-          error:error,
-        });
-      });
-
-      if(!deliveryman){
-          return res.status(404).json({
-            msg:"Entregador não encontrado!",
-          });
-      }
-
-      if(client.associateId != tokenId){
-        return res.status(405).json({
-          msg:"Não autorizado."
-        });
-      }
-
-      if(deliveryman.associateId != client.associateId){
-        return res.status(405).json({
-          msg:"Não autorizado."
-        });
-      }
-
-      if(client){
-        const delivery = await Delivery.create({
-          description,
-          clientId,
-          deliveryManId,
-          associateId: client.associateId,
-          delivered: false,
-          value: 0.0,
+      if (client){
+        console.log("carregou client ", client);
+        const deliveryman = await DeliveryMan.findOne({
+          where:{id: deliveryManId}
         }).catch((error) => {
-          return res.status(500).json({
-            msg:"Erro interno no servidor",
+          return res.status(404).json({
+            msg:"Deliveryman nï¿½o encontrado!",
             error:error,
           });
-        })
-        
-        if(delivery){
-          return res.status(200).json({
-            msg:"Nova entrega cadastrada com sucesso!"
-          });
-        }else{
-          return res.status(500).json({
-            msg:"Erro ao cadastrar nova entrega"
-          });
+        });
+  
+        if(!deliveryman){
+            return res.status(404).json({
+              msg:"Entregador nï¿½o encontrado!",
+            });
+        } 
+
+        if (deliveryman){
+          console.log("carregou deliveryman ", deliveryman);
+
+          console.log("client.associateId ",client.associateId);
+          console.log("deliveryman.associateId ",deliveryman.associateId);
+          console.log("tokenId ",tokenId);
+          
+          if(client.associateId != tokenId){
+            return res.status(405).json({
+              msg:"Nï¿½o autorizado."
+            });
+          }
+    
+          if(deliveryman.associateId != client.associateId){
+            return res.status(405).json({
+              msg:"Nï¿½o autorizado."
+            });
+          }
+    
+          const delivery = await Delivery.create({
+            description,
+            clientId,
+            deliveryManId,
+            associateId: client.associateId,
+            delivered: false,
+            value: 0.0,
+          }).catch((error) => {
+            return res.status(500).json({
+              msg:"Erro interno no servidor",
+              error:error,
+            });
+          })
+          
+          if(delivery){
+            return res.status(200).json({
+              msg:"Nova entrega cadastrada com sucesso!"
+            });
+          }else{
+            return res.status(500).json({
+              msg:"Erro ao cadastrar nova entrega"
+            });
+          }
         }
       }
     },
@@ -99,7 +102,7 @@ module.exports = {
         if(delivery){
             if(delivery.delivered){
               return res.status(400).json({
-                msg:"Entrega já concluída, não é possível excluir"
+                msg:"Entrega jï¿½ concluï¿½da, nï¿½o ï¿½ possï¿½vel excluir"
               });
             }else{
               const deletedDelivery = await Delivery.destroy({
@@ -113,7 +116,7 @@ module.exports = {
 
               if(deletedDelivery){
                 return res.status(200).json({
-                  msg:"Entrega excluída com sucesso!"
+                  msg:"Entrega excluï¿½da com sucesso!"
                 });
               }else{
                 return res.status(400).json({
@@ -123,7 +126,7 @@ module.exports = {
             }
         }else{
           return res.status(404).json({
-            msg:"Entrega não encontrada"
+            msg:"Entrega nï¿½o encontrada"
           })
         }
     },
@@ -143,7 +146,7 @@ module.exports = {
 
       if(!delivery){
         return res.status(404).json({
-          msg:"Entrega não encontrada!",
+          msg:"Entrega nï¿½o encontrada!",
         });
       }
 
@@ -159,12 +162,12 @@ module.exports = {
         
         if(!deliveryman){
           return res.status(404).json({
-            msg:"Entregador não encontrado!",
+            msg:"Entregador nï¿½o encontrado!",
           });
         }else{
           if(delivery.associateId != deliveryman.associateId){
             return res.status(422).json({
-              msg:"Este entregador não pertence ao associado do pedido."
+              msg:"Este entregador nï¿½o pertence ao associado do pedido."
             });
           }
         }
@@ -182,12 +185,12 @@ module.exports = {
 
         if(!client){
           return res.status(404).json({
-            msg:"Cliente não encontrado!",
+            msg:"Cliente nï¿½o encontrado!",
           });
         }else{
           if(client.associateId != delivery.associateId){
             return res.status(422).json({
-              msg:"Este cliente não pertence ao associado do pedido."
+              msg:"Este cliente nï¿½o pertence ao associado do pedido."
             });
           }
         }
@@ -196,7 +199,7 @@ module.exports = {
       if(delivery){
         if(delivery.delivered){
           return res.status(400).json({
-            msg:"Entrega já concluída, não é possível alterar"
+            msg:"Entrega jï¿½ concluï¿½da, nï¿½o ï¿½ possï¿½vel alterar"
           });
         }
         const updatedDelivery = await Delivery.update(newData,{
@@ -218,7 +221,7 @@ module.exports = {
         }
       }else{
         return res.status(404).json({
-          msg:"Entrega não encontrada"
+          msg:"Entrega nï¿½o encontrada"
         });
       }
     },
@@ -237,7 +240,7 @@ module.exports = {
         if (deliveries){
           return res.status(200).json({ deliveries });
         }else{
-          return res.status(404).json({msg: "Não foi possível encontrar entregas."}); 
+          return res.status(404).json({msg: "Nï¿½o foi possï¿½vel encontrar entregas."}); 
         }    
     },
 
@@ -254,7 +257,7 @@ module.exports = {
       if (deliveries){
         return res.status(200).json({ deliveries });
       }else{
-        return res.status(404).json({msg: "Não foi possível encontrar entregas."}); 
+        return res.status(404).json({msg: "Nï¿½o foi possï¿½vel encontrar entregas."}); 
       }    
     },
 
@@ -271,7 +274,7 @@ module.exports = {
       if (deliveries){
         return res.status(200).json({ deliveries });
       }else{
-        return res.status(404).json({msg: "Não foi possível encontrar entregas."}); 
+        return res.status(404).json({msg: "Nï¿½o foi possï¿½vel encontrar entregas."}); 
       }    
     },
 
@@ -290,7 +293,7 @@ module.exports = {
       if (deliveries){
         return res.status(200).json({ deliveries });
       }else{
-        return res.status(404).json({msg: "Não foi possível encontrar entregas."}); 
+        return res.status(404).json({msg: "Nï¿½o foi possï¿½vel encontrar entregas."}); 
       }    
     },
 
@@ -309,7 +312,7 @@ module.exports = {
       if (deliveries){
         return res.status(200).json({ deliveries });
       }else{
-        return res.status(404).json({msg: "Não foi possível encontrar entregas."}); 
+        return res.status(404).json({msg: "Nï¿½o foi possï¿½vel encontrar entregas."}); 
       }    
     },
 
@@ -328,7 +331,7 @@ module.exports = {
       if (deliveries){
         return res.status(200).json({ deliveries });
       }else{
-        return res.status(404).json({msg: "Não foi possível encontrar entregas."}); 
+        return res.status(404).json({msg: "Nï¿½o foi possï¿½vel encontrar entregas."}); 
       }    
     },
 
@@ -350,7 +353,7 @@ module.exports = {
       if(delivery){
         if(delivery.deliveryManId != tokenId){
           return res.status(405).json({
-            msg:"Não autorizado"
+            msg:"Nï¿½o autorizado"
           });
         }
 
@@ -371,7 +374,7 @@ module.exports = {
         if(updated){
 
           return res.status(200).json({
-            msg:"Entrega concluída com sucesso!"
+            msg:"Entrega concluï¿½da com sucesso!"
           });
 
         }else{
