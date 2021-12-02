@@ -7,15 +7,14 @@ const Delivery = require("../models/Delivery");
 
 
 function generateToken(id){
-    console.log(process.env.JWT_SECRET);
-    process.env.JWT_SECRET = Math.random().toString(36).slice(-20);
-    console.log(process.env.JWT_SECRET);
 
-    const token = jwt.sign({ id }, process.env.JWT_SECRET, 
-        {expiresIn : 86400} //24hrs
+    process.env.JWT_SECRET = Math.random().toString(36).slice(-20);
+
+
+    const token = jwt.sign({ id, isAssociate: true }, process.env.JWT_SECRET, 
+        {expiresIn : 18000} //24hrs
     );
     
-    console.log(token);
     return token;
 }
 
@@ -147,7 +146,9 @@ module.exports = {
             } else {
                 if (bcrypt.compareSync(password, associate.password)){
                     const token = generateToken(associate.id);
-                    return res.status(200).json({msg : "Autenticado com sucesso.", token : token});
+                    if(token){
+                      return res.status(200).json({msg : "Autenticado com sucesso.", token : token});
+                    }
                 } else {
                     return res.status(404).json({msg: "Usuário ou Senha inválidos A."});
                 }

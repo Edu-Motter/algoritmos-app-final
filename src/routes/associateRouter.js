@@ -10,5 +10,6 @@ associateRouter.post("/authentication", validation, associateController.authenti
 associateRouter.get("/listAssociateByCnpj", validation, associateController.searchAssociateByCnpj);
 associateRouter.delete("/deleteAssociate", validation, associateController.deleteAssociate);
 associateRouter.put("/updateAssociate", validation, associateController.updateAssociate);
+associateRouter.post("/authentication", associateController.authentication);
 
 module.exports = associateRouter;
