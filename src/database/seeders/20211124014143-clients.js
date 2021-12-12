@@ -8,25 +8,25 @@ module.exports = {
         {
           associateId: 1,
           companyName: "Clinte Bom",
-          cnpj: "03.726.350/0001-21",
+          cnpj: "03726350000121",
           address: "Address Test, 234",
         },
         {
           associateId: 1,
           companyName: "Client Ruim 2",
-          cnpj: "03.726.350/0001-22",
+          cnpj: "03726350000122",
           address: "Address Test, 233",
         },
         {
           associateId: 1,
           companyName: "Client Mediano 3",
-          cnpj: "03.726.350/0001-33",
+          cnpj: "03726350000133",
           address: "Address Test, 231",
         },
         {
           associateId: 1,
           companyName: "Client Otimo 4",
-          cnpj: "03.726.350/0001-34",
+          cnpj: "03726350000134",
           address: "Address Test, 232",
         },
       ]

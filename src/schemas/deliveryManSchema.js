@@ -6,8 +6,7 @@ const newValidation = Joi.object().keys({
     .required(),
 
     cpf: Joi.string()
-    .min(13)
-    .pattern(/^\d{3}\.\d{3}\.\d{3}\-\d{2}$/)
+    .min(11)
     .required(),
 
     password: Joi.string()
@@ -29,8 +28,7 @@ const updateValidation = Joi.object().keys({
     name: Joi.string(),
 
     cpf: Joi.string()
-    .min(13)
-    .pattern(/^\d{3}\.\d{3}\.\d{3}\-\d{2}$/),
+    .min(11),
 
     password: Joi.string()
     .min(8)
@@ -47,8 +45,7 @@ const deleteValidation = Joi.object().keys({
 
 const searchByCpfValidation = Joi.object().keys({
     cpf: Joi.string()
-    .min(13)
-    .pattern(/^\d{3}\.\d{3}\.\d{3}\-\d{2}$/)
+    .min(11)
     .required(),
 });
 
@@ -66,8 +63,7 @@ const searchByAssociateValidation = Joi.object().keys({
 
 const authValidation = Joi.object().keys({
     cpf: Joi.string()
-    .min(13)
-    .pattern(/^\d{3}\.\d{3}\.\d{3}\-\d{2}$/)
+    .min(11)
     .required(),
 
     password: Joi.string()

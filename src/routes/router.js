@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
 });
 
 router.use("/delivery", deliveryRouter);    
-router.use("/deliveryMan", deliveryManRouter);
+router.use("/deliveryman", deliveryManRouter);
 router.use("/client", clientRouter);
 router.use("/associate", associateRouter);
 

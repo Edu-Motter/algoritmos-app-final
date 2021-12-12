@@ -238,7 +238,7 @@ module.exports = {
             if (bcrypt.compareSync(password, deliveryman.password)){
                 const token = generateToken(deliveryman.id);
                 if(token){
-                  return res.status(200).json({msg : "Autenticado com sucesso.", token : token});
+                  return res.status(200).json({msg : "Autenticado com sucesso.", access_token : token});
                 }
             } else {
                 return res.status(405).json({msg: "Usuário ou Senha inválidos A."});

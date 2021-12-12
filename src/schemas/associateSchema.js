@@ -5,9 +5,8 @@ const newValidation = Joi.object().keys({
     .required(),
 
     cnpj: Joi.string()
-    .min(18)
-    .max(18)
-    .pattern(/^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$/)
+    .min(14)
+    .max(14)
     .required(),
 
     password: Joi.string()
@@ -26,9 +25,8 @@ const updateValidation = Joi.object().keys({
     companyName: Joi.string(),
     
     cnpj: Joi.string()
-    .min(18)
-    .max(18)
-    .pattern(/^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$/),
+    .min(14)
+    .max(14),
     
     password: Joi.string()
     .min(8)
@@ -45,17 +43,15 @@ const deleteValidation = Joi.object().keys({
 
 const listByCnpjValidation = Joi.object().keys({
     cnpj: Joi.string()
-    .min(18)
-    .max(18)
-    .pattern(/^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$/)
+    .min(14)
+    .max(14)
     .required(),
 });
 
 const authValidation = Joi.object().keys({
     cnpj: Joi.string()
-    .min(18)
-    .max(18)
-    .pattern(/^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$/)
+    .min(14)
+    .max(14)
     .required(),
 
     password: Joi.string()
