@@ -7,8 +7,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
 app.use(router);
 
-app.listen( process.env.SYSTEM_PORT, () => {
-    console.log("Server is running at localhost: ", process.env.SYSTEM_PORT);
+var port_number = server.listen(process.env.PORT || 3000);
+app.listen(port_number, () => {
+  console.log("Server is running at localhost: ", process.env.SYSTEM_PORT);
 });
+
+
+
 
 module.exports = app;
