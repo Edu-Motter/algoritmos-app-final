@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 function verifyJWT(req, res, next) {
-    const token = req.headers["x-access-token"];
+    const token = req.headers["Authorization"];
     console.log(token);
     if (!token) return res.status(401).json({msg: "Token não foi definido"});
 
