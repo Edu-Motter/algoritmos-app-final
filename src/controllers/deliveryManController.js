@@ -218,6 +218,29 @@ module.exports = {
 
   },
 
+  async listAllDeliveryMenByAssociate(req, res){
+    const isAssociate = req.isAssociate;
+    const associateId = req.entityId;
+
+    if(!isAssociate){
+      return res.status(404).json({
+        msg:"N�o autorizado."
+      });
+    }
+    
+    const deliveryMen = await DeliveryMan.findAll({
+       where:{associateId: associateId}
+    }).catch((error) => {
+      return res.status(500).json({msg: "Falha na conex�o.", error: error});
+    });
+
+    if (deliveryMen) 
+      return res.status(200).json({ deliveryMen });
+    else 
+      return res.status(404).json({msg: "N�o foi possivel encontrar clientes."});
+  },
+
+
   async authentication(req, res){
     //!todo: Reescrever: somente fiz copia para nao esquecermos!!!
 

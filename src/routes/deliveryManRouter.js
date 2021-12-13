@@ -13,5 +13,6 @@ deliveryManRouter.put("/updateDeliveryMan", auth, validation, deliveryManControl
 deliveryManRouter.delete("/deleteDeliveryman", auth, validation, deliveryManController.deleteDeliveryman);
 deliveryManRouter.post("/authentication", validation, deliveryManController.authentication);
 deliveryManRouter.get("/financialReport", auth, deliveryManController.financialReport);
+deliveryManRouter.get("/listAllDeliveryMenByAssociate", auth, deliveryManController.listAllDeliveryMenByAssociate);
 
 module.exports = deliveryManRouter;

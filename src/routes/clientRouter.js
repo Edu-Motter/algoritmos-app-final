@@ -10,5 +10,6 @@ clientRouter.get("/listClientById", auth, validation, clientController.searchCli
 clientRouter.delete("/deleteClient", auth, validation, clientController.deleteClient);
 clientRouter.put("/updateClient", auth, validation, clientController.updateClient)
 clientRouter.post("/newClient", auth, validation, clientController.newClient);
+clientRouter.get("/listAllClientsByAssociate", auth, clientController.listAllClientsByAssociate);
 
 module.exports = clientRouter;

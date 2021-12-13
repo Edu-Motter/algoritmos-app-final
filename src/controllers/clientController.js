@@ -174,4 +174,27 @@ module.exports = {
           return res.status(404).json({msg:"N�o foi possivel cadastrar novo cliente"});
         }
     },
+
+    async listAllClientsByAssociate(req, res){
+
+      const isAssociate = req.isAssociate;
+      const associateId = req.entityId;
+
+      if(!isAssociate){
+        return res.status(404).json({
+          msg:"N�o autorizado."
+        });
+      }
+
+      const clients = await Client.findAll({
+          where:{associateId: associateId}
+      }).catch((error) => {
+          return res.status(500).json({msg: "Falha na conex�o.", error: error});
+      });
+
+      if (clients) 
+          return res.status(200).json({ clients });
+      else 
+          return res.status(404).json({msg: "N�o foi possivel encontrar clientes."});
+  },
 }
