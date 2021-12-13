@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const router = require("./routes/router");
 require("./database")
+const server = require('http').Server(app);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
