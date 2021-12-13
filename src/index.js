@@ -9,7 +9,7 @@ app.use(router);
 
 var port_number = server.listen(process.env.PORT || 3000);
 app.listen(port_number, () => {
-  console.log("Server is running at localhost: ", process.env.SYSTEM_PORT);
+  console.log("Server is running at localhost: ", port_number);
 });
 
 
