@@ -10,7 +10,7 @@ function generateToken(id){
   process.env.JWT_SECRET = Math.random().toString(36).slice(-20);
 
     const token = jwt.sign({ id, isAssociate: false }, process.env.JWT_SECRET, 
-        {expiresIn : 18000} //24hrs
+        {expiresIn : 2629800} //1 mês
     );
 
   return token;
