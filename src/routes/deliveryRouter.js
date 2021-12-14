@@ -14,5 +14,7 @@ deliveryRouter.get("/listAllByDeliveryman", auth, deliveryController.listAllByDe
 deliveryRouter.get("/listAllDeliveredByDeliveryman", auth, deliveryController.listAllDeliveredByDeliveryman);
 deliveryRouter.get("/listAllPendingByDeliveryman", auth, deliveryController.listAllPendingByDeliveryman);
 deliveryRouter.put("/endDelivery", auth, deliveryController.endDelivery);
+deliveryRouter.get("/listAllDeliveredByAssociate", auth, deliveryController.listAllDeliveredByAssociate);
+deliveryRouter.get("/listAllPendingByAssociate", auth, deliveryController.listAllPendingByAssociate);
 
 module.exports = deliveryRouter;

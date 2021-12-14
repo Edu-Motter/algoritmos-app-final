@@ -261,6 +261,59 @@ module.exports = {
       }    
     },
 
+    async listAllDeliveredByAssociate(req,res){
+      const isAssociate = req.isAssociate;
+      const associateId = req.entityId;
+
+      if(!isAssociate){
+        return res.status(404).json({
+          msg:"N�o autorizado."
+        });
+      }
+
+      const deliveries = await Delivery.findAll({
+        where:{associateId: associateId, delivered: true}
+      }).catch((error) => {
+       return res.status(500).json({
+          msg: "Erro interno no servidor", 
+          error: error
+         });
+      });
+
+      if (deliveries){
+        return res.status(200).json({ deliveries });
+      }else{
+        return res.status(404).json({msg: "N�o foi poss�vel encontrar entregas."}); 
+      }    
+    },
+
+    async listAllPendingByAssociate(req,res){
+      const isAssociate = req.isAssociate;
+      const associateId = req.entityId;
+
+      if(!isAssociate){
+        return res.status(404).json({
+          msg:"N�o autorizado."
+        });
+      }
+
+      const deliveries = await Delivery.findAll({
+        where:{associateId: associateId, delivered: false}
+      }).catch((error) => {
+       return res.status(500).json({
+          msg: "Erro interno no servidor", 
+          error: error
+         });
+      });
+
+      if (deliveries){
+        return res.status(200).json({ deliveries });
+      }else{
+        return res.status(404).json({msg: "N�o foi poss�vel encontrar entregas."}); 
+      }    
+    },
+
+
     async listAllPending(req,res){
       const deliveries = await Delivery.findAll({
         where:{delivered: false}
