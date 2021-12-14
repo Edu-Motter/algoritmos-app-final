@@ -49,6 +49,7 @@ module.exports = {
 
     async deleteClient(req, res){
         const clientId = req.query.id;
+        const associateTokenId = req.entityId;
 
         const clientExists = await Client.findOne({
           where:{id: clientId}
