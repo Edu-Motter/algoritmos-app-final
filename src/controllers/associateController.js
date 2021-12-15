@@ -65,6 +65,22 @@ module.exports = {
         } else res.status(404).json({msg:"N�o foi poss�vel encontrar o associado"});
     },
 
+    async searchAssociateById(req, res){
+      const id = req.entityId;
+
+      const associate = await Associate.findOne({
+          where: {id: id },
+      });
+      
+      if (associate) {
+        if (associate){
+          return res.status(200).json({associate});
+        }else{
+          return res.status(404).json({msg:"N�o h� associados com esse id"});
+        } 
+      } else res.status(404).json({msg:"N�o foi poss�vel encontrar o associado"});
+  },
+
     async updateAssociate(req, res){
         const associateId = req.body.id;
         const associate = req.body;

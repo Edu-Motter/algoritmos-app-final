@@ -13,5 +13,6 @@ associateRouter.put("/updateAssociate", validation, associateController.updateAs
 associateRouter.post("/authentication", associateController.authentication);
 associateRouter.get("/admReport", auth, associateController.adminReport);
 associateRouter.get("/financialReport", auth, associateController.financialReport);
+associateRouter.get("/findAssociateById", auth, associateController.searchAssociateById);
 
 module.exports = associateRouter;
