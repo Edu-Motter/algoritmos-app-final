@@ -147,16 +147,6 @@ module.exports = {
 
         }
 
-        const associateExist = await Associate.findOne({
-          where:{cnpj: cnpj}
-        });
-        
-        if(associateExist){
-          return res.status(422).json({
-            msg: "CNPJ j� cadastrado!"
-          });
-        }
-
         const client = await Client.create({
             cnpj,  
             associateId,
