@@ -5,9 +5,8 @@ const newValidation = Joi.object().keys({
     .required(),
 
     cnpj: Joi.string()
-    .min(18)
-    .max(18)
-    .pattern(/^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$/)
+    .min(14)
+    .max(14)
     .required(),
 
     address: Joi.string().required()
@@ -21,9 +20,8 @@ const updateValidation = Joi.object().keys({
     companyName: Joi.string(),
     
     cnpj: Joi.string()
-    .min(18)
-    .max(18)
-    .pattern(/^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$/),
+    .min(14)
+    .max(14),
     
     address: Joi.string()
 });
