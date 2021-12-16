@@ -272,7 +272,10 @@ module.exports = {
       }
 
       const deliveries = await Delivery.findAll({
-        where:{associateId: associateId, delivered: true}
+        where:{
+          associateId: associateId, 
+          delivered: true
+        }
       }).catch((error) => {
        return res.status(500).json({
           msg: "Erro interno no servidor", 

@@ -10,8 +10,6 @@ const newValidation = Joi.object().keys({
     .required(),
 
     password: Joi.string()
-    .min(8)
-    .pattern(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/)
     .required(),
 
     phone: Joi.string(),
